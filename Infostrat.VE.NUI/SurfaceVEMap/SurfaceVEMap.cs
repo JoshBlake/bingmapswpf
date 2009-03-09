@@ -38,9 +38,9 @@ namespace InfoStrat.VE.NUI
         Affine2DInertiaProcessor inertiaProcessorZoom;
 
         #endregion
-        
+
         #region ZoomSensitivity DP
-        
+
         public double ZoomSensitivity
         {
             get { return (double)GetValue(ZoomSensitivityProperty); }

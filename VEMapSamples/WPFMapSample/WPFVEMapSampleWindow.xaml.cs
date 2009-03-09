@@ -1,4 +1,21 @@
-﻿using System;
+﻿/**************************************************
+ * InfoStrat.VE
+ * Copyright (c) 2009 
+ * Information Strategies
+ * www.infostrat.com
+ * 
+ * This project is covered by the LGPL license:
+ * http://virtualearthwpf.codeplex.com/license
+ * 
+ * This library has NO WARRANTY and is UNSUPPORTED
+ * but check in at http://virtualearthwpf.codeplex.com
+ * if you need help.
+ * 
+ * This copyright notice must be preserved.
+ * 
+ **************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +42,9 @@ namespace WPFVEMapSample
         public WPFVEMapSampleWindow()
         {
             InitializeComponent();
+
+            //This binding won't update till later for some reason
+            cbxCursor.IsChecked = false;
         }
 
         #endregion
@@ -33,7 +53,6 @@ namespace WPFVEMapSample
 
         private void map_MapLoaded(object sender, EventArgs e)
         {
-            
         }
 
         private void btnStyleRoad_Click(object sender, RoutedEventArgs e)

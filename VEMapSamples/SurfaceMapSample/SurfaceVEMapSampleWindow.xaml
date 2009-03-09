@@ -3,7 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:s="http://schemas.microsoft.com/surface/2008"
                  xmlns:map="clr-namespace:InfoStrat.VE.NUI;assembly=InfoStrat.VE.NUI"
-                 Title="SurfaceMapSample"
+                 Title="Surface VEMap Sample"
                  Width="1024"
                  Height="768">
     <s:SurfaceWindow.Resources>

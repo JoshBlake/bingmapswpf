@@ -57,7 +57,7 @@ namespace InfoStrat.VE
         private PublicEventsGlobeControl globeControl;
 
         private VEMapStyle currentMapStyle;
-
+        
         #endregion
 
         #region Public Events

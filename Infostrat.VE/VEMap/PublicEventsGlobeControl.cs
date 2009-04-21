@@ -3,12 +3,64 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.MapPoint.Rendering3D;
 using System.Windows.Forms;
+using Microsoft.MapPoint.Rendering3D.Steps;
 
 namespace InfoStrat.VE
 {
     [CLSCompliant(false)]
     public class PublicEventsGlobeControl : GlobeControl
     {
+        PositionStep positionStep = null;
+
+        internal PositionStep PositionStep
+        {
+            get
+            {
+                return positionStep;
+            }
+        }
+
+        public PublicEventsGlobeControl()
+            : base()
+        {
+        }
+
+        public PublicEventsGlobeControl(GlobeControlInitializationOptions options)
+            : base(options)
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            // wpf calls this twice, and we don't handle it correctly, 
+            // bug :(
+
+            if (this.IsDisposed)
+                return;
+
+            Host.RenderEngine.ManuallyUninitializeRender();
+
+            base.Dispose(disposing);
+        }
+        
+        protected override void  OnUIThreadYield(int timeoutInMilliseconds)
+        {
+            // do nothing, we use this to prevent UI thread starvation 
+            // but it is not applicable, kind of a bug too :(
+        }
+
+        public void InitRenderEngine()
+        {
+            this.ManualInitialize();
+            this.Host.RenderEngine.ManuallyInitializeRender();
+            this.Host.RenderEngine.ManuallyRenderNextFrame();
+
+            PositionStep positionStep = new PositionStep(this.Host.RenderEngine.StepManager);
+
+            this.Host.RenderEngine.StepManager.InsertBefore(typeof(RenderStep), positionStep);
+
+        }
+
         public void DoKeyDown(KeyEventArgs e)
         {
             this.OnKeyDown(e);

@@ -44,13 +44,11 @@ namespace InfoStrat.VE
         bool isDependencyPropertiesDirty;
         
         private delegate void DelegateGlobeRedraw();
-        private delegate void DelegateGlobeRendered();
+        private delegate void DelegateGlobeInitialized();
         
         Microsoft.MapPoint.Graphics3D.Types.Surface surfCpy;
 
-        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-
-        int numFrames = 0;
+        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         Dictionary<int, EventHandler> onFlyToEndCallbacks;
 
@@ -122,27 +120,7 @@ namespace InfoStrat.VE
 
             set
             {
-                //Are we in Visual Studio Designer?  Is the control loaded yet?
-                if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this) && isControlLoaded)
-                {
-                    switch (value)
-                    {
-                        case VEMapStyle.Road:
-                            this.globeControl.Host.DataSources.Remove("Texture", "Texture");
-                            this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://maps.live.com//Manifests/RT.xml", DataSourceUsage.TextureMap));
-                            break;
-                        case VEMapStyle.Aerial:
-                            this.globeControl.Host.DataSources.Remove("Texture", "Texture");
-                            this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://maps.live.com//Manifests/AT.xml", DataSourceUsage.TextureMap));
-                            break;
-                        case VEMapStyle.Hybrid:
-                            this.globeControl.Host.DataSources.Remove("Texture", "Texture");
-                            this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://maps.live.com//Manifests/HT.xml", DataSourceUsage.TextureMap));
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                UpdateMapStyle(value);
 
                 this.currentMapStyle = value;
 
@@ -339,8 +317,7 @@ namespace InfoStrat.VE
                 //Free managed resources
                 if (globeControl != null)
                 {
-                    globeControl.Dispose();
-                    globeControl = null;
+                    
                 }
             }
         }
@@ -383,7 +360,11 @@ namespace InfoStrat.VE
             veSurface = IntPtr.Zero;
             veSurfaceSrc = IntPtr.Zero;
 
-            this.globeControl = new PublicEventsGlobeControl();
+            Microsoft.MapPoint.Rendering3D.GlobeControl.GlobeControlInitializationOptions options = new GlobeControl.GlobeControlInitializationOptions();
+            // prevents the globeControl from trying to create a render thread
+            options.DelayRenderThreadCreation = true;
+            
+            this.globeControl = new PublicEventsGlobeControl(options);
             
             winVE.winFormsHost.Child = this.globeControl;
 
@@ -433,9 +414,6 @@ namespace InfoStrat.VE
                 this.hostGrid.Background = new VisualBrush(tb);
                 return;
             }
-
-            StartVERendering();
-
         }
 
         #endregion
@@ -599,21 +577,9 @@ namespace InfoStrat.VE
             //Are we in Visual Studio Designer?
             if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
-
-                this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Elevation", "Elevation", @"http://maps.live.com//Manifests/HD.xml", DataSourceUsage.ElevationMap));
+                this.globeControl.Host.RenderEngine.Initialized += new EventHandler(RenderEngine_Initialized);
                 
-                //this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://maps.live.com//Manifests/RT.xml", DataSourceUsage.TextureMap));
-                //MapStyle setter sets Texture layer
-                this.MapStyle = this.currentMapStyle;
-
-                this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Models", "Models", @"http://maps.live.com//Manifests/MO.xml", DataSourceUsage.Model));
-                
-
-                this.globeControl.Host.RenderEngine.FirstFrameRendered += new EventHandler(RenderEngine_FirstFrameRendered);
-
-                Show3DCursor = false;
-                ShowBuildings = true;
-
+                this.globeControl.InitRenderEngine();
             }
         }
 
@@ -627,15 +593,61 @@ namespace InfoStrat.VE
         #endregion
 
         #region Map Loaded Event
-
-        void RenderEngine_FirstFrameRendered(object sender, EventArgs e)
+        
+        void RenderEngine_Initialized(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, new DelegateGlobeRendered(GlobeRendered));
+            //Invoke back to UI thread
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, new DelegateGlobeInitialized(GlobeInitialized));
         }
 
-        void GlobeRendered()
+        private void UpdateMapStyle(VEMapStyle value)
         {
-            this.OnMapLoaded(new EventArgs());
+            //Are we in Visual Studio Designer?  Is the control loaded yet?
+            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this) && isControlLoaded)
+            {
+                switch (value)
+                {
+                    //JRB 4-13-09: Updated URLS to use forward links per VE3D team blog: http://blogs.msdn.com/virtualearth3d/archive/2009/04/06/data-format-revision.aspx
+                    case VEMapStyle.Road:
+                        this.globeControl.Host.DataSources.Remove("Texture", "Texture");
+                        this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://go.microsoft.com/fwlink/?LinkID=98770", DataSourceUsage.TextureMap));
+                        break;
+                    case VEMapStyle.Aerial:
+                        this.globeControl.Host.DataSources.Remove("Texture", "Texture");
+                        this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://go.microsoft.com/fwlink/?LinkID=98771", DataSourceUsage.TextureMap));
+                        break;
+                    case VEMapStyle.Hybrid:
+                        this.globeControl.Host.DataSources.Remove("Texture", "Texture");
+                        this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Texture", "Texture", @"http://go.microsoft.com/fwlink/?LinkID=98772", DataSourceUsage.TextureMap));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        void GlobeInitialized()
+        {
+            GraphicsEngine3D graphicsEngine = GetGraphicsEngine();
+            graphicsEngine.CapFrameRate = false;
+            graphicsEngine.Device.Settings.TargetFramesPerSecond = 0;
+
+            //JRB 4-13-09: Updated URLS to use forward links per VE3D team blog: http://blogs.msdn.com/virtualearth3d/archive/2009/04/06/data-format-revision.aspx
+            this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Elevation", "Elevation", @"http://go.microsoft.com/fwlink/?LinkID=98774", DataSourceUsage.ElevationMap));
+
+            //MapStyle setter sets Texture layer
+            this.MapStyle = this.currentMapStyle;
+
+            this.globeControl.Host.DataSources.Add(new DataSourceLayerData("Models", "Models", @"http://go.microsoft.com/fwlink/?LinkID=98775", DataSourceUsage.Model));
+
+            Show3DCursor = false;
+            ShowBuildings = true;
+
+            StartVERendering();
+
+            
+
+            this.OnMapLoaded(EventArgs.Empty);
         }
 
         protected virtual void OnMapLoaded(EventArgs e)
@@ -1176,8 +1188,10 @@ namespace InfoStrat.VE
 
             if (d3dImage.IsFrontBufferAvailable)
             {
+                CompositionTarget.Rendering += CompositionTarget_Rendering;
+                
                 GraphicsEngine3D graphicsEngine = GetGraphicsEngine();
-
+                
                 if (graphicsEngine != null)
                 {
                     graphicsEngine.PostRender += new EventHandler(graphicsEngine_PostRender);
@@ -1199,6 +1213,9 @@ namespace InfoStrat.VE
             // We will create a new scene when a D3D device becomes 
             // available again.
 
+            CompositionTarget.Rendering -= CompositionTarget_Rendering;
+            stopwatch.Stop();
+
             GraphicsEngine3D graphicsEngine = GetGraphicsEngine();
 
             graphicsEngine.PostRender -= graphicsEngine_PostRender;
@@ -1212,22 +1229,22 @@ namespace InfoStrat.VE
             }
 
         }
+        
+        void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            if (!stopwatch.IsRunning)
+                stopwatch.Start();
+            if (stopwatch.ElapsedMilliseconds > 30)
+            {
+                this.globeControl.Host.RenderEngine.ManuallyRenderNextFrame();
+                stopwatch.Reset();
+            }
+        }
 
         private void graphicsEngine_PostRender(object sender, EventArgs e)
         {
-            sw.Start();
             //Get the direct3d9 pointer
             veSurface = GetSourceSurfacePtr();
-
-            if (sw.IsRunning)
-            {
-                numFrames++;
-
-                //sw.Stop();
-                //System.Diagnostics.Debug.WriteLine("redraw internal: " + (numFrames / sw.Elapsed.TotalSeconds));
-                //sw.Reset();
-            }
-
 
             if (globeControl.InvokeRequired)
             {
@@ -1241,7 +1258,6 @@ namespace InfoStrat.VE
 
         private void InvalidateVESurface()
         {
-
 
             if (d3dImage.IsFrontBufferAvailable && veSurface != IntPtr.Zero)
             {

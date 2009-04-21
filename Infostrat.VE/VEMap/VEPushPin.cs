@@ -498,7 +498,7 @@ namespace InfoStrat.VE
 
         #region Virtual Methods
 
-        protected void Initialize()
+        protected virtual void Initialize()
         {
             this.ShapeType = VEShapeType.Pushpin;
             this.Button = null;
@@ -525,7 +525,7 @@ namespace InfoStrat.VE
             }
         }
     
-        private void OnClick(object sender, VEPushPinClickedEventArgs e)
+        protected virtual void OnClick(object sender, VEPushPinClickedEventArgs e)
         {
             if (Click != null)
             {

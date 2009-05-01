@@ -70,7 +70,7 @@ namespace InfoStrat.VE.NUI
 
         #region Virtual Methods
 
-        protected new void Initialize()
+        protected override void Initialize()
         {
             base.Initialize();
 

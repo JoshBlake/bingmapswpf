@@ -9,6 +9,7 @@ using System.Windows.Shapes;
 using InfoStrat.VE.Utilities;
 using System.Windows.Media.Animation;
 using Microsoft.MapPoint.Geometry.VectorMath;
+using Microsoft.MapPoint.Rendering3D.Utility.Types;
 
 namespace InfoStrat.VE
 {
@@ -354,6 +355,18 @@ namespace InfoStrat.VE
 
         #endregion
 
+        #region Destructors
+
+        ~VEPushPin()
+        {
+            if (this.Map != null)
+            {
+                this.Map.RemoveRegisteredPosition(this);
+            }
+        }
+
+        #endregion
+
         #region Overridden Methods
 
         public override void OnApplyTemplate()
@@ -368,9 +381,13 @@ namespace InfoStrat.VE
             }
         }
 
-
         public override void UpdatePosition(VEMap map)
         {
+            if (this.Map != map)
+            {
+                map.AddRegisteredPosition(this, DisplayLatLong);
+            }
+
             base.UpdatePosition(map);
 
             VEPushPinAltitudeEvent altEvent;
@@ -589,8 +606,8 @@ namespace InfoStrat.VE
                 
                 if (camera != null)
                 {
-                    //Might be null if lat/long is off screen or hidden
-                    position = this.Map.LatLongToPoint(latLong);
+                    //Might return null if lat/long is off screen or hidden
+                    position = this.Map.LatLongToPoint(latLong, this);
 
                     //Not visible if no position (off screen)
                     if (position == null)

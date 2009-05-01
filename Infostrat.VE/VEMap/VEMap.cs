@@ -55,6 +55,8 @@ namespace InfoStrat.VE
         private PublicEventsGlobeControl globeControl;
 
         private VEMapStyle currentMapStyle;
+
+        Dictionary<object, RegisteredPosition> registeredPositions;
         
         #endregion
 
@@ -359,6 +361,8 @@ namespace InfoStrat.VE
 
             veSurface = IntPtr.Zero;
             veSurfaceSrc = IntPtr.Zero;
+
+            registeredPositions = new Dictionary<object, RegisteredPosition>();
 
             Microsoft.MapPoint.Rendering3D.GlobeControl.GlobeControlInitializationOptions options = new GlobeControl.GlobeControlInitializationOptions();
             // prevents the globeControl from trying to create a render thread
@@ -753,19 +757,97 @@ namespace InfoStrat.VE
             return false;
         }
 
+        public void RemoveRegisteredPosition(object key)
+        {
+            if (registeredPositions.ContainsKey(key))
+            {
+                RegisteredPosition rp = registeredPositions[key];
+
+                this.globeControl.Host.WorldEngine.RemoveLocationListener(rp);
+
+                registeredPositions.Remove(key);
+            }
+        }
+
+        public void AddRegisteredPosition(object key, VELatLong latLong)
+        {
+            if (!registeredPositions.ContainsKey(key))
+            {
+                //Don't add surface elevation -- it is handled by the ILocationListener code in RegisteredPosition
+                LatLonAlt lla = LatLonAlt.CreateUsingDegrees(latLong.Latitude, latLong.Longitude, latLong.Altitude);
+
+                RegisteredPosition rp = new RegisteredPosition();
+
+                rp.Position = lla;
+                //This call to update the surface elevation is slower than the ILocationListener way, but will only be needed
+                //once in a while when the latLong is changed
+                double surfaceElevation = this.globeControl.Host.WorldEngine.GetSurfaceElevation(lla.LatLon);
+
+                rp.Position = lla;
+
+                LatLonAlt newLLA = lla;
+                newLLA.Altitude += surfaceElevation;
+                rp.Vector = newLLA.GetVector();
+
+                this.globeControl.Host.WorldEngine.AddLocationListener(rp);
+
+                registeredPositions.Add(key, rp);
+            }
+        }
+
         public Point? LatLongToPoint(VELatLong latLong)
         {
+            return LatLongToPoint(latLong, null);
+        }
+
+        public Point? LatLongToPoint(VELatLong latLong, object key)
+        {
+            
             if (this.globeControl == null ||
-                this.globeControl.Host == null ||
-                this.globeControl.Host.Navigation == null)
+                this.globeControl.PositionStep == null)
             {
                 return null;
             }
 
-            LatLon ll = LatLon.CreateUsingDegrees(latLong.Latitude, latLong.Longitude);
+            System.Drawing.Point? position = null;
 
+            if (key != null && registeredPositions.ContainsKey(key))
+            {
+                RegisteredPosition rp = registeredPositions[key];
 
-            System.Drawing.Point? position = this.globeControl.Host.Navigation.ScreenPositionFromLatLon(ll);
+                //If position changed, update the RegisteredPosition
+
+                LatLonAlt lla = LatLonAlt.CreateUsingDegrees(latLong.Latitude, latLong.Longitude, latLong.Altitude);
+
+                if (rp.Position.Latitude != lla.Latitude ||
+                    rp.Position.Longitude != lla.Longitude ||
+                    rp.Position.Altitude != lla.Altitude)
+                {
+                    
+                    //This call to update the surface elevation is slower than the ILocationListener way, but will only be needed
+                    //once in a while when the latLong is changed
+                    double surfaceElevation = this.globeControl.Host.WorldEngine.GetSurfaceElevation(lla.LatLon);
+                    
+                    rp.Position = lla;
+
+                    LatLonAlt newLLA = lla;
+                    newLLA.Altitude += surfaceElevation;
+                    rp.Vector = newLLA.GetVector();
+                }
+                
+                position = this.globeControl.PositionStep.VectorToScreenPosition(rp.Vector);
+
+            }
+            else
+            {
+                //Add surface elevation
+                double surfaceElevation = this.globeControl.Host.WorldEngine.GetSurfaceElevation(latLong.ToLatLonAlt().LatLon);
+                LatLonAlt lla = LatLonAlt.CreateUsingDegrees(latLong.Latitude, latLong.Longitude, latLong.Altitude + surfaceElevation);
+
+                position = this.globeControl.PositionStep.LatLongToScreenPosition(lla);
+            }
+
+            //System.Drawing.Point? position = this.globeControl.Host.Navigation.ScreenPositionFromLatLon(ll);
 
             if (position != null)
             {
@@ -785,6 +867,7 @@ namespace InfoStrat.VE
             {
                 return null;
             }
+             
         }
 
         public VELatLong PointToLatLong(Point? point)
@@ -1014,10 +1097,10 @@ namespace InfoStrat.VE
             this.Yaw = rpy.Yaw;
         }
 
-        protected static double MapValue(double value, double fromMin, double fromMax, double toMin, double toMax)
+        internal static double MapValue(double value, double fromMin, double fromMax, double toMin, double toMax)
         {
             //Normalize
-            double ret = value / (fromMax - fromMin);
+            double ret = (value - fromMin) / (fromMax - fromMin);
             //Resize and translate
             return ret * (toMax - toMin) + toMin;
         }

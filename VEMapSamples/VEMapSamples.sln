@@ -11,22 +11,31 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurfaceVEMapSample", "Surfa
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug on Surface|Any CPU = Debug on Surface|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2772804-EA24-4643-B996-448070BEB69B}.Debug on Surface|Any CPU.ActiveCfg = Debug on Surface|Any CPU
+		{C2772804-EA24-4643-B996-448070BEB69B}.Debug on Surface|Any CPU.Build.0 = Debug on Surface|Any CPU
 		{C2772804-EA24-4643-B996-448070BEB69B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C2772804-EA24-4643-B996-448070BEB69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2772804-EA24-4643-B996-448070BEB69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2772804-EA24-4643-B996-448070BEB69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug on Surface|Any CPU.ActiveCfg = Debug on Surface|Any CPU
+		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug on Surface|Any CPU.Build.0 = Debug on Surface|Any CPU
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug on Surface|Any CPU.ActiveCfg = Debug on Surface|Any CPU
+		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug on Surface|Any CPU.Build.0 = Debug on Surface|Any CPU
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Debug on Surface|Any CPU.ActiveCfg = Debug on Surface|Any CPU
+		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Debug on Surface|Any CPU.Build.0 = Debug on Surface|Any CPU
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release|Any CPU.ActiveCfg = Release|Any CPU

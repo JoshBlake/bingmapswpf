@@ -55,7 +55,7 @@ namespace InfoStrat.VE
             this.Host.RenderEngine.ManuallyInitializeRender();
             this.Host.RenderEngine.ManuallyRenderNextFrame();
 
-            PositionStep positionStep = new PositionStep(this.Host.RenderEngine.StepManager);
+            positionStep = new PositionStep(this.Host.RenderEngine.StepManager);
 
             this.Host.RenderEngine.StepManager.InsertBefore(typeof(RenderStep), positionStep);
 

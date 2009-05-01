@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,8 +38,11 @@ namespace InfoStrat.VE
             LatLonAlt newLLA = Position;
             newLLA.Altitude += groundElevation;
             Vector = newLLA.GetVector();
+            LatLonAlt lla = new LatLonAlt(Vector);
             Valid = true;
         }
+
+        
 
     }
 }

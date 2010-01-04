@@ -34,6 +34,12 @@ namespace SurfaceVEMapSample
             InitializeComponent();
             // Add handlers for Application activation events
             AddActivationHandlers();
+            map.CameraChanged += new EventHandler<VECameraChangedEventArgs>(map_CameraChanged);
+        }
+
+        void map_CameraChanged(object sender, VECameraChangedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("camera changed: A:" + e.IsAltitudeChanged + " La:" + e.IsLatitudeChanged + " Lo:" + e.IsLongitudeChanged + " P:" + e.IsPitchChanged + " R:" + e.IsRollChanged + " Y:" + e.IsYawChanged);
         }
 
         #endregion
@@ -135,32 +141,32 @@ namespace SurfaceVEMapSample
 
         private void btnUp_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(0, 1000, false);
+            map.DoMapMove(0, 50);
         }
 
         private void btnRight_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(-1000, 0, false);
+            map.DoMapMove(-50, 0);
         }
 
         private void btnDown_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(0, -1000, false);
+            map.DoMapMove(0, -50);
         }
 
         private void btnLeft_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(1000, 0, false);
+            map.DoMapMove(50, 0);
         }
 
         private void btnZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapZoom(1000, false);
+            map.DoMapZoom(50);
         }
 
         private void btnZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapZoom(-1000, false);
+            map.DoMapZoom(-50);
         }
         
         private void SurfacePushPin_Click(object sender, SurfaceVEPushPinClickedEventArgs e)
@@ -170,6 +176,20 @@ namespace SurfaceVEMapSample
             map.FlyTo(pin.LatLong, -90, 0, 300, null);
         }
 
+        private void btnTiltMode_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnTiltMode.IsChecked.HasValue)
+            {
+                if (btnTiltMode.IsChecked.Value)
+                {
+                    this.map.MapManipulationMode = MapManipulationMode.TiltSpinZoomPivot;
+                }
+                else
+                {
+                    this.map.MapManipulationMode = MapManipulationMode.PanZoomPivot;
+                }
+            }
+        }
         #endregion
     }
 }

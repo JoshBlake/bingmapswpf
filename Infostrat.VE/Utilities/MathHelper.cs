@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace InfoStrat.VE.Utilities
 {
-    public class MathHelper
+    public static class MathHelper
     {
         public static Vector RotateVector(Vector v, double angle)
         {
@@ -38,8 +38,19 @@ namespace InfoStrat.VE.Utilities
                 return Math.Acos(cosine) * 180.0 / Math.PI;
         }
 
-        private MathHelper()
+        public static double MapValue(double value, double fromMin, double fromMax, double toMin, double toMax)
         {
+            //Normalize
+            double ret = (value - fromMin) / (fromMax - fromMin);
+            //Resize and translate
+            return ret * (toMax - toMin) + toMin;
+        }
+
+        public static double Clamp(double value, double min, double max)
+        {
+            double actualMin = Math.Min(min, max);
+            double actualMax = Math.Max(min, max);
+            return Math.Min(actualMax, Math.Max(actualMin, value));
         }
     }
 }

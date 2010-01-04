@@ -32,7 +32,7 @@ namespace InfoStrat.VE
 
         protected override void Dispose(bool disposing)
         {
-            // wpf calls this twice, and we don't handle it correctly, 
+            // wpf calls this twice, and VE doesn't handle it correctly, 
             // bug :(
 
             if (this.IsDisposed)
@@ -52,9 +52,12 @@ namespace InfoStrat.VE
         public void InitRenderEngine()
         {
             this.ManualInitialize();
-            this.Host.RenderEngine.ManuallyInitializeRender();
-            this.Host.RenderEngine.ManuallyRenderNextFrame();
-
+            if (!this.Host.Ready)
+            {
+                this.Host.RenderEngine.ManuallyInitializeRender();
+                this.Host.RenderEngine.ManuallyRenderNextFrame();
+                this.Host.RenderEngine.ManuallyRenderNextFrame(); //make sure it is ready
+            }
             positionStep = new PositionStep(this.Host.RenderEngine.StepManager);
 
             this.Host.RenderEngine.StepManager.InsertBefore(typeof(RenderStep), positionStep);

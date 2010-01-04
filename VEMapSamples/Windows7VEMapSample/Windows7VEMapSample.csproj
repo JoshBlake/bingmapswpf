@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A6D30108-C610-4724-9CCD-F40D8835E35A}</ProjectGuid>
+    <ProjectGuid>{EB0627BA-B854-455F-8472-2F6C38E88795}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WPFVEMapSample</RootNamespace>
-    <AssemblyName>WPFVEMapSample</AssemblyName>
+    <RootNamespace>Windows7VEMapSample</RootNamespace>
+    <AssemblyName>Windows7VEMapSample</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -32,14 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug on Surface|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug on Surface\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
@@ -56,19 +48,12 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug on Surface|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug on Surface\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -86,7 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="WPFVEMapSampleWindow.xaml">
+    <Page Include="Windows7VEMapSampleWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -94,8 +79,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WPFVEMapSampleWindow.xaml.cs">
-      <DependentUpon>WPFVEMapSampleWindow.xaml</DependentUpon>
+    <Compile Include="Windows7VEMapSampleWindow.xaml.cs">
+      <DependentUpon>Windows7VEMapSampleWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -129,6 +114,17 @@
       <Project>{D9B10AB5-EF32-4607-AA16-8D612718C1B6}</Project>
       <Name>InfoStrat.VE</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows7.Multitouch\Windows7.Multitouch.csproj">
+      <Project>{BA3201ED-9FDD-44E5-AA16-5A14526BB908}</Project>
+      <Name>Windows7.Multitouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\InfoStrat.VE.Windows7Touch\InfoStrat.VE.Windows7Touch.csproj">
+      <Project>{87C41192-6020-45DB-A06B-4A8C45F81FE1}</Project>
+      <Name>InfoStrat.VE.Windows7Touch</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Virtual_Earth_Icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

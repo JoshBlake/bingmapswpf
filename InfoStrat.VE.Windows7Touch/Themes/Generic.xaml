@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Interop="clr-namespace:System.Windows.Interop;assembly=PresentationCore">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/InfoStrat.VE.Windows7Touch;component/VEMap/Win7TouchVEPushPin.xaml" />
+        <ResourceDictionary Source="/InfoStrat.VE.Windows7Touch;component/VEMap/Win7TouchVEMap.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

@@ -12,10 +12,17 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Windows.Interop;
 using InfoStrat.VE;
+using System.Diagnostics;
 
 [assembly: CLSCompliant(true)]
 namespace InfoStrat.VE.NUI
-{    
+{
+    public enum MapManipulationMode
+    {
+        PanZoomPivot,
+        TiltSpinZoomPivot
+    }
+
     public class SurfaceVEMap : VEMap
     {
         #region UIElements
@@ -29,15 +36,16 @@ namespace InfoStrat.VE.NUI
         #endregion
 
         #region Class Members
-        
+
         List<Contact> downContacts;
         double lastExpansionDelta;
 
         Affine2DManipulationProcessor manipulationProcessor;
-        Affine2DInertiaProcessor inertiaProcessorMove;
-        Affine2DInertiaProcessor inertiaProcessorZoom;
+        Affine2DInertiaProcessor inertiaProcessor;
 
         #endregion
+
+        #region Properties
 
         #region ZoomSensitivity DP
 
@@ -49,12 +57,12 @@ namespace InfoStrat.VE.NUI
 
         // Using a DependencyProperty as the backing store for ZoomSensitivity.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ZoomSensitivityProperty =
-            DependencyProperty.Register("ZoomSensitivity", typeof(double), typeof(SurfaceVEMap), new UIPropertyMetadata(15.0));
-        
+            DependencyProperty.Register("ZoomSensitivity", typeof(double), typeof(SurfaceVEMap), new UIPropertyMetadata(6.0));
+
         #endregion
 
         #region PanSensitivity DP
-        
+
         public double PanSensitivity
         {
             get { return (double)GetValue(PanSensitivityProperty); }
@@ -63,8 +71,111 @@ namespace InfoStrat.VE.NUI
 
         // Using a DependencyProperty as the backing store for PanSensitivity.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PanSensitivityProperty =
-            DependencyProperty.Register("PanSensitivity", typeof(double), typeof(SurfaceVEMap), new UIPropertyMetadata(3.5));
-        
+            DependencyProperty.Register("PanSensitivity", typeof(double), typeof(SurfaceVEMap), new UIPropertyMetadata(1.0));
+
+        #endregion
+
+        #region TiltSensitivity DP
+
+        public double TiltSensitivity
+        {
+            get { return (double)GetValue(TiltSensitivityProperty); }
+            set { SetValue(TiltSensitivityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PanSensitivity.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TiltSensitivityProperty =
+            DependencyProperty.Register("TiltSensitivity", typeof(double), typeof(SurfaceVEMap), new UIPropertyMetadata(0.5));
+
+        #endregion
+
+        private MapManipulationMode _mapManipulationMode = MapManipulationMode.PanZoomPivot;
+        public MapManipulationMode MapManipulationMode
+        {
+            get
+            {
+                return _mapManipulationMode;
+            }
+            set
+            {
+                _mapManipulationMode = value;
+                NotifyPropertyChanged("MapManipulationMode");
+            }
+        }
+
+        private bool _isPanEnabled = true;
+        public bool IsPanEnabled
+        {
+            get
+            {
+                return _isPanEnabled;
+            }
+            set
+            {
+                _isPanEnabled = value;
+                NotifyPropertyChanged("IsPanEnabled");
+            }
+        }
+
+        private bool _isZoomEnabled = true;
+        public bool IsZoomEnabled
+        {
+            get
+            {
+                return _isZoomEnabled;
+            }
+            set
+            {
+                _isZoomEnabled = value;
+                NotifyPropertyChanged("IsZoomEnabled");
+            }
+        }
+
+        private bool _isPivotEnabled = true;
+        public bool IsPivotEnabled
+        {
+            get
+            {
+                return _isPivotEnabled;
+            }
+            set
+            {
+                _isPivotEnabled = value;
+                NotifyPropertyChanged("IsPivotEnabled");
+
+            }
+        }
+
+        private bool _isTiltEnabled = true;
+        public bool IsTiltEnabled
+        {
+            get
+            {
+                return _isTiltEnabled;
+            }
+            set
+            {
+                _isTiltEnabled = value;
+                NotifyPropertyChanged("IsTiltEnabled");
+
+            }
+        }
+
+        private bool _isSpinEnabled = true;
+        public bool IsSpinEnabled
+        {
+            get
+            {
+                return _isSpinEnabled;
+            }
+            set
+            {
+                _isSpinEnabled = value;
+                NotifyPropertyChanged("IsSpinEnabled");
+            }
+        }
+
+
         #endregion
 
         #region Constructors
@@ -84,22 +195,19 @@ namespace InfoStrat.VE.NUI
             this.manipulationProcessor = new Affine2DManipulationProcessor(
                 Affine2DManipulations.TranslateX |
                 Affine2DManipulations.TranslateY |
-                Affine2DManipulations.Scale,
+                Affine2DManipulations.Scale |
+                Affine2DManipulations.Rotate,
                 this, false);
 
             this.manipulationProcessor.Affine2DManipulationCompleted += new EventHandler<Affine2DOperationCompletedEventArgs>(manipulationProcessor_Affine2DManipulationCompleted);
             this.manipulationProcessor.Affine2DManipulationDelta += new EventHandler<Affine2DOperationDeltaEventArgs>(manipulationProcessor_Affine2DManipulationDelta);
             this.manipulationProcessor.Affine2DManipulationStarted += new EventHandler<Affine2DOperationStartedEventArgs>(manipulationProcessor_Affine2DManipulationStarted);
 
-            this.inertiaProcessorMove = new Affine2DInertiaProcessor();
+            this.inertiaProcessor = new Affine2DInertiaProcessor();
 
-            this.inertiaProcessorMove.Affine2DInertiaDelta += new EventHandler<Affine2DOperationDeltaEventArgs>(inertiaProcessorMove_Affine2DInertiaDelta);
-            this.inertiaProcessorMove.Affine2DInertiaCompleted += new EventHandler<Affine2DOperationCompletedEventArgs>(inertiaProcessorMove_Affine2DInertiaCompleted);
+            this.inertiaProcessor.Affine2DInertiaDelta += new EventHandler<Affine2DOperationDeltaEventArgs>(inertiaProcessor_Affine2DInertiaDelta);
+            this.inertiaProcessor.Affine2DInertiaCompleted += new EventHandler<Affine2DOperationCompletedEventArgs>(inertiaProcessor_Affine2DInertiaCompleted);
 
-            this.inertiaProcessorZoom = new Affine2DInertiaProcessor();
-
-            this.inertiaProcessorZoom.Affine2DInertiaDelta += new EventHandler<Affine2DOperationDeltaEventArgs>(inertiaProcessorZoom_Affine2DInertiaDelta);
-            this.inertiaProcessorZoom.Affine2DInertiaCompleted += new EventHandler<Affine2DOperationCompletedEventArgs>(inertiaProcessorZoom_Affine2DInertiaCompleted);
         }
 
         #endregion
@@ -147,24 +255,19 @@ namespace InfoStrat.VE.NUI
 
         void inertiaProcessorZoom_Affine2DInertiaCompleted(object sender, Affine2DOperationCompletedEventArgs e)
         {
-            DoMapZoom(0, true);
         }
 
         void inertiaProcessorZoom_Affine2DInertiaDelta(object sender, Affine2DOperationDeltaEventArgs e)
         {
-            DoMapZoom(e.Velocity.X, true);
         }
 
-        void inertiaProcessorMove_Affine2DInertiaCompleted(object sender, Affine2DOperationCompletedEventArgs e)
+        void inertiaProcessor_Affine2DInertiaCompleted(object sender, Affine2DOperationCompletedEventArgs e)
         {
-            DoMapMove(0, 0, true);
         }
 
-        void inertiaProcessorMove_Affine2DInertiaDelta(object sender, Affine2DOperationDeltaEventArgs e)
+        void inertiaProcessor_Affine2DInertiaDelta(object sender, Affine2DOperationDeltaEventArgs e)
         {
-            DoMapMove(e.Velocity.X,
-                      e.Velocity.Y, 
-                      true);
+            ProcessManipulationInertiaDelta(e);
         }
 
         #endregion
@@ -173,47 +276,74 @@ namespace InfoStrat.VE.NUI
 
         void manipulationProcessor_Affine2DManipulationStarted(object sender, Affine2DOperationStartedEventArgs e)
         {
-            inertiaProcessorMove.End();
-
-            inertiaProcessorZoom.End();
-
-            DoMapZoom(0, false);
-            DoMapMove(0, 0, false);
+            inertiaProcessor.End();
         }
 
         void manipulationProcessor_Affine2DManipulationDelta(object sender, Affine2DOperationDeltaEventArgs e)
         {
-            DoMapMove(e.Velocity.X * this.PanSensitivity, e.Velocity.Y * this.PanSensitivity, true);
+            ProcessManipulationInertiaDelta(e);
+        }
 
-            if (downContacts.Count >= 2)
-                DoMapZoom(e.ExpansionVelocity * this.ZoomSensitivity, true);
+        private void ProcessManipulationInertiaDelta(Affine2DOperationDeltaEventArgs e)
+        {
+            if (MapManipulationMode == MapManipulationMode.PanZoomPivot)
+            {
+                if (IsPanEnabled)
+                {
+                    DoMapMove(e.Delta.X * PanSensitivity, e.Delta.Y * PanSensitivity);
+                }
+            }
             else
-                DoMapZoom(lastExpansionDelta, true);
+            {
+                if (IsSpinEnabled)
+                {
+                    double deltaAngle = InfoStrat.VE.Utilities.MathHelper.MapValue(e.Delta.X, -20, 20, -1, 1);
+                    DoMapYaw(deltaAngle);
+
+                }
+                if (IsTiltEnabled)
+                {
+                    double desiredPitch = ClampPitch(this.Pitch + e.Delta.Y * TiltSensitivity, this.Altitude);
+                    DoMapTilt(desiredPitch);
+                }
+            }
+            
+            if (IsZoomEnabled)
+            {
+                DoMapZoom(e.ExpansionDelta * ZoomSensitivity, e.ManipulationOrigin);
+            }
+
+            if (IsPivotEnabled)
+            {
+
+                DoMapPivot(e.RotationDelta, e.ManipulationOrigin);
+            }
+
+        }
+
+        private double ClampPitch(double pitch, double altitude)
+        {
+            double maxAngle = InfoStrat.VE.Utilities.MathHelper.MapValue(altitude, 3000, 7500000, -5, -80);
+            maxAngle = InfoStrat.VE.Utilities.MathHelper.Clamp(maxAngle, -80, -5);
+            double minAngle = -90;
+
+            return Math.Max(minAngle, Math.Min(maxAngle, pitch));
         }
 
         void manipulationProcessor_Affine2DManipulationCompleted(object sender, Affine2DOperationCompletedEventArgs e)
         {
-            inertiaProcessorMove.InitialOrigin = new Point(0, 0);
-            inertiaProcessorMove.InitialVelocity = e.Velocity * this.PanSensitivity;
-            inertiaProcessorMove.DesiredDeceleration = 0.002;
+            inertiaProcessor.InitialOrigin = e.ManipulationOrigin;
 
-            inertiaProcessorMove.Begin();
+            inertiaProcessor.InitialVelocity = e.Velocity;
+            inertiaProcessor.InitialExpansionVelocity = e.ExpansionVelocity;
+            inertiaProcessor.InitialAngularVelocity = e.AngularVelocity;
 
-            inertiaProcessorZoom.InitialOrigin = new Point(0, 0);
-            inertiaProcessorZoom.InitialVelocity = new Vector(lastExpansionDelta, 0);
-            inertiaProcessorZoom.DesiredDeceleration = 0.0005;
+            inertiaProcessor.DesiredDeceleration = 0.002;
+            inertiaProcessor.DesiredAngularDeceleration = 0.0005f;
+            inertiaProcessor.DesiredExpansionDeceleration = 0.0002f;
 
-            inertiaProcessorZoom.Begin();
-        }
+            inertiaProcessor.Begin();
 
-        #endregion
-
-        #region Public Map Movement Helpers
-
-        public override void  DoMapZoom(double zoom, bool isContinuous)
-        {
-            lastExpansionDelta = zoom;
- 	        base.DoMapZoom(zoom, isContinuous);
         }
 
         #endregion

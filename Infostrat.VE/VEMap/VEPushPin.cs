@@ -306,7 +306,7 @@ namespace InfoStrat.VE
         {
             get
             {
-                return CurrentState;
+                return currentState;
             }
         }
 
@@ -359,10 +359,11 @@ namespace InfoStrat.VE
 
         ~VEPushPin()
         {
-            if (this.Map != null)
-            {
-                this.Map.RemoveRegisteredPosition(this);
-            }
+            // This throws an exception in some cases
+            //if (this.Map != null)
+            //{
+            //      this.Map.RemoveRegisteredPosition(this);
+            //}
         }
 
         #endregion

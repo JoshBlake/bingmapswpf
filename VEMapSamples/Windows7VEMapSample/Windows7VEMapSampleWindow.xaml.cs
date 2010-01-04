@@ -1,21 +1,4 @@
-﻿/**************************************************
- * InfoStrat.VE
- * Copyright (c) 2009 
- * Information Strategies
- * www.infostrat.com
- * 
- * This project is covered by the LGPL license:
- * http://virtualearthwpf.codeplex.com/license
- * 
- * This library has NO WARRANTY and is UNSUPPORTED
- * but check in at http://virtualearthwpf.codeplex.com
- * if you need help.
- * 
- * This copyright notice must be preserved.
- * 
- **************************************************/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,24 +11,28 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using InfoStrat.VE.Windows7Touch;
 using InfoStrat.VE;
+//using Windows7.Multitouch;
+//using Windows7.Multitouch.Manipulation;
 
-namespace WPFVEMapSample
+namespace Windows7VEMapSample
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for Windows7VEMapSampleWindow.xaml
     /// </summary>
-    public partial class WPFVEMapSampleWindow : Window
+    public partial class Windows7VEMapSampleWindow
     {
+        #region Fields
+        
+        #endregion
+
         #region Constructors
 
-        public WPFVEMapSampleWindow()
+        public Windows7VEMapSampleWindow()
         {
             InitializeComponent();
 
-            //This binding won't update till later for some reason
-            cbxCursor.IsChecked = false;
-            
             map.CameraChanged += new EventHandler<VECameraChangedEventArgs>(map_CameraChanged);
         }
 
@@ -53,6 +40,10 @@ namespace WPFVEMapSample
         {
             System.Diagnostics.Debug.WriteLine("camera changed: A:" + e.IsAltitudeChanged + " La:" + e.IsLatitudeChanged + " Lo:" + e.IsLongitudeChanged + " P:" + e.IsPitchChanged + " R:" + e.IsRollChanged + " Y:" + e.IsYawChanged);
         }
+
+        #endregion
+
+        #region Properties
 
         #endregion
 
@@ -64,32 +55,32 @@ namespace WPFVEMapSample
 
         private void btnStyleRoad_Click(object sender, RoutedEventArgs e)
         {
-            map.MapStyle = InfoStrat.VE.VEMapStyle.Road;
+            map.MapStyle = VEMapStyle.Road;
         }
 
         private void btnStyleHybrid_Click(object sender, RoutedEventArgs e)
         {
-            map.MapStyle = InfoStrat.VE.VEMapStyle.Hybrid;
+            map.MapStyle = VEMapStyle.Hybrid;
         }
 
         private void btnStyleAerial_Click(object sender, RoutedEventArgs e)
         {
-            map.MapStyle = InfoStrat.VE.VEMapStyle.Aerial;
+            map.MapStyle = VEMapStyle.Aerial;
         }
 
         private void btnUp_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(0, 50);
+           map.DoMapMove(0, 50);
         }
 
         private void btnRight_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(-50, 0);
+           map.DoMapMove(-50, 0);
         }
 
         private void btnDown_Click(object sender, RoutedEventArgs e)
         {
-            map.DoMapMove(0, -50);
+           map.DoMapMove(0, -50);
         }
 
         private void btnLeft_Click(object sender, RoutedEventArgs e)
@@ -110,11 +101,27 @@ namespace WPFVEMapSample
         private void VEPushPin_Click(object sender, VEPushPinClickedEventArgs e)
         {
             VEPushPin pin = sender as VEPushPin;
-
+            if (pin == null)
+                return;
             map.FlyTo(pin.LatLong, -90, 0, 300, null);
         }
 
+        private void btnTiltMode_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnTiltMode.IsChecked.HasValue)
+            {
+                if (btnTiltMode.IsChecked.Value)
+                {
+                    this.map.MapManipulationMode = MapManipulationMode.TiltSpinZoomPivot;
+                }
+                else
+                {
+                    this.map.MapManipulationMode = MapManipulationMode.PanZoomPivot;
+                }
+            }
+        }
+        
         #endregion
-
+                        
     }
 }

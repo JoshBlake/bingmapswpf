@@ -74,7 +74,14 @@
                                   VerticalAlignment="Center"
                                   IsChecked="{Binding ElementName=map, Path=ShowBuildings}" />
                     </StackPanel>
-                    
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Show Building Textures: "
+                                   Margin="0,0,10,0" />
+                        <CheckBox Name="cbxBuildingTextures"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding ElementName=map, Path=ShowBuildingTextures}" />
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Style: "
                                    Margin="0,0,10,0" />

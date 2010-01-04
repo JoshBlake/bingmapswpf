@@ -41,34 +41,65 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug on Surface|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug on Surface\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.MapPoint.Data, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Virtual Earth 3D\Microsoft.MapPoint.Data.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.MapPoint.Geometry, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Virtual Earth 3D\Microsoft.MapPoint.Geometry.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.MapPoint.Graphics3D, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\MapPoint dlls\Microsoft.MapPoint.Graphics3D.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.MapPoint.GraphicsAPI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\MapPoint dlls\Microsoft.MapPoint.GraphicsAPI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.MapPoint.Rendering3D, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Virtual Earth 3D\Microsoft.MapPoint.Rendering3D.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.MapPoint.Rendering3D.Utility, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Virtual Earth 3D\Microsoft.MapPoint.Rendering3D.Utility.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.MapPoint.UtilityPartialTrust, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Virtual Earth 3D\Microsoft.MapPoint.UtilityPartialTrust.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -110,6 +141,7 @@
     <Compile Include="VEMap\JumpCameraController.cs" />
     <Compile Include="VEMap\PositionStep.cs" />
     <Compile Include="VEMap\RegisteredPosition.cs" />
+    <Compile Include="VEMap\VECameraChangedEventArgs.cs" />
     <Compile Include="VEMap\VERollPitchYaw.cs" />
     <Compile Include="Utilities\AnimateUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

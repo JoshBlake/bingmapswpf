@@ -1,0 +1,72 @@
+InfoStrat.VE
+Copyright (c) 2009 
+Information Strategies
+www.infostrat.com
+
+http://virtualearthwpf.codeplex.com
+
+January 4, 2010
+
+InfoStrat.VE.VEMap:
+
+New: Updated DoMapMove and DoMapZoom with better algorithms.
+New: Issue 5022: Added DoMapRotate (for pivoting) and DoMapTilt
+New: Issue 5019: Added alternate versions of DoMapMove, DoMapZoom, and DoMapRotate that allow manipulations centered on a Point
+New: Issue 2062: Added Property for ShowBuildingTextures, defaults to true
+New: Issue 2920: Added CameraChanged event and VECameraChangedEventArgs
+Change: Obsoleted old DoMapMove and DoMapZoom methods with IsContinuous parameter.
+Change: Changed default WindowsFormsHost size from 768x576 to 1024x768. If you see performance issues, it is a video card bottleneck. Change it back in VEWindow.xaml.
+Bug fix: InfoStrat.VE no long breaks after computer resumes from sleep
+Bug fix: Issue 3220: Fixed stack overflow on a VEPushPin property
+Bug fix: Issue 3230: Zooming in too far no longer changes pitch when you hit the ground
+Bug fix: Issue 3260: Mouse wheel zooming now works
+Bug fix: Issue 3262: UpdatePosition are now called on parent class VEShape, not just VEPushPin
+Bug fix: Issue 5020: Fixed issue where certain actions caused the control to initialize when it was already initialized, causing an exception
+Bug fix: Issue 5021: Fixed issue where hiding and showing the map (such as on a tab) caused repeated loading/unloading events, and the control didn't 
+Bug fix: Issue 5024: Fixed issue where PushPins can cause an exception when the Window is closing.continue rendering when it was reloaded
+
+
+InfoStrat.VE.Windows7Touch.Win7TouchVEMap:
+
+New: Issue 5023: Added Win7TouchVEMap - multi-touch manipulations available for Windows 7 with .NET 3.5 SP1.
+New: Added Is[Pan/Zoom/Rotate/Tilt]Enabled properties to allow you to selectively enable and disable certain manipulations.
+New: Add MapManipulationMode property to allow changing between PanZoomRotate mode (default) and Tilt mode.
+New: Tilt mode just uses the vertical component of the manipulation to change the pitch.
+New: Pan and Zoom Sensitivity reset to new default values because of new algorithms.
+
+
+InfoStrat.VE.NUI.SurfaceVEMap:
+
+Updated to use new manipulation-centered DoMap[Move/Zoom/Rotate/Tilt] features
+Added Is[Pan/Zoom/Rotate/Tilt]Enabled properties to allow you to selectively enable and disable certain manipulations.
+Add MapManipulationMode property to allow changing between PanZoomRotate mode (default) and Tilt mode.
+Tilt mode just uses the vertical component of the manipulation to change the pitch.
+Pan and Zoom Sensitivity reset to new default values because of new algorithms.
+
+
+Windows7VEMapSample:
+
+Added Windows7VEMapSample that uses Win7TouchVEMap
+
+
+WPFVEMapSample:
+
+Updated sample controls to reflect all available properties and bindings
+Added CameraChanged sample event handler
+
+SurfaceVEMapSample:
+Updated sample controls to reflect all available properties and bindings
+Added CameraChanged sample event handler
+
+
+May 1, 2009
+Bug fixes and higher performance pushpins.
+
+April 21, 2009
+Added support for Virtual Earth v4.
+
+March 9, 2009
+Minor bug fixes
+
+March 7, 2009
+Initial upload

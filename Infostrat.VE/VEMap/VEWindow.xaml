@@ -6,18 +6,18 @@
     Visibility="Hidden" 
     Width="1024"
     Height="768"
-    Left="-2000"
+    Left="-20000"
     Top="0"
     WindowStyle="None"
     >
     <DockPanel>
         <Grid Name="globeHost">
-            <!--<WindowsFormsHost Name="winFormsHost"
-                              Width="1024"
-                              Height="768" />-->
             <WindowsFormsHost Name="winFormsHost"
+                              Width="1024"
+                              Height="768" />
+            <!--<WindowsFormsHost Name="winFormsHost"
                               Width="768"
-                              Height="576" />
+                              Height="576" />-->
         </Grid>
     </DockPanel>
 </Window>

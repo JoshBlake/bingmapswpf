@@ -502,13 +502,13 @@ namespace InfoStrat.VE
         [Obsolete("DoMapMove(double, double, bool) is obsolete. Use DoMapMove(double, double) instead", true)]
         public virtual void DoMapMove(double dx, double dy, bool isContinuous)
         {
-            throw new NotImplementedException("DoMapMove(double, double, bool) is obsolete. Use DoMapMove(double, double) instead");
+            DoMapMove(dx, dy);
         }
 
         [Obsolete("DoMapZoom(double, bool) is obsolete. Use DoMapZoom(double) or DoMapZoom(double, Point) instead", true)]
         public virtual void DoMapZoom(double zoom, bool isContinuous)
         {
-            throw new NotImplementedException("DoMapZoom(double, bool) is obsolete. Use DoMapZoom(double) or DoMapZoom(double, Point) instead");
+            DoMapZoom(zoom);
         }
 
         /// <summary>

@@ -7,17 +7,14 @@ using System.Windows.Controls;
 
 namespace InfoStrat.VE
 {
-	public abstract class VEShape : ContentControl
+	public abstract class VEShape : ContentControl, ILocationProvider
 	{
         #region Class Members
-        
-        private VEShapeType shapeType;
-        
-        //TODO move points to VEPolyLine
-        private Collection<VELatLong> points;
-        private string customIconHtml;
 
-        private VEMap map;
+	    //TODO move _points to VEPolyLine
+        private readonly Collection<VELatLong> _points;
+
+	    private VEMap _map;
 
         #endregion
 
@@ -27,64 +24,44 @@ namespace InfoStrat.VE
         {
             get
             {
-                return map;
+                return _map;
             }
         }
 
-        public string CustomIconHtml 
-        { 
-            get
-            {
-                return customIconHtml;
-            }
-            set
-            {
-                customIconHtml = value;
-            }
-        }
+	    public string CustomIconHtml { get; set; }
 
-        public Collection<VELatLong> Points 
+	    public Collection<VELatLong> Points 
         {   
             get
             {
-                return this.points;
+                return this._points;
             }
         }
 
-        public VEShapeType ShapeType 
-        {
-            get
-            {
-                return this.shapeType;
-            }
-            //TODO: set is temporary, delete soon
-            set
-            {
-                this.shapeType = value;
-            }
-        }
+	    public VEShapeType ShapeType { get; set; }
 
-        #endregion
+	    #endregion
 
         #region Constructors
 
-        public VEShape()
+	    protected VEShape()
         {
-            this.points = new Collection<VELatLong>();
+            this._points = new Collection<VELatLong>();
         }
         
         #endregion
 
         #region Public Methods
 
-        public virtual void UpdatePosition()
+        public virtual Point? UpdatePosition()
         {
-            UpdatePosition(this.map);
+            return UpdatePosition(this._map);
         }
 
-        public virtual void UpdatePosition(VEMap map)
+        public virtual Point? UpdatePosition(VEMap map)
         {
-            this.map = map;
+            this._map = map;
+            return null;
         }
 
         #endregion

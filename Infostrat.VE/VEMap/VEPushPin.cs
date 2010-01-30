@@ -31,7 +31,7 @@ namespace InfoStrat.VE
         private VEPushPinState currentState;
 
         double previousCameraAltitude;
-        
+
         protected enum VEPushPinAltitudeEvent
         {
             None,
@@ -57,7 +57,7 @@ namespace InfoStrat.VE
         public double Latitude
         {
             get { return (double)GetValue(LatitudeProperty); }
-            set 
+            set
             {
                 SetValue(LatitudeProperty, value);
             }
@@ -92,7 +92,7 @@ namespace InfoStrat.VE
         #endregion
 
         #region Longitude DP
-        
+
         public double Longitude
         {
             get { return (double)GetValue(LongitudeProperty); }
@@ -172,11 +172,11 @@ namespace InfoStrat.VE
         // Using a DependencyProperty as the backing store for Altitude.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AltitudeProperty =
             DependencyProperty.Register("Altitude", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(0.0));
-        
+
         #endregion
 
         #region AltMode DP
-        
+
         public VEAltMode AltMode
         {
             get { return (VEAltMode)GetValue(AltModeProperty); }
@@ -186,11 +186,11 @@ namespace InfoStrat.VE
         // Using a DependencyProperty as the backing store for AltMode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AltModeProperty =
             DependencyProperty.Register("AltMode", typeof(VEAltMode), typeof(VEPushPin), new UIPropertyMetadata(VEAltMode.FromGround));
-        
+
         #endregion
 
         #region MinAltitude DP
-        
+
         /// <summary>
         /// Minimum altitude, in meters, where the pushpin is visible
         /// </summary>
@@ -203,11 +203,11 @@ namespace InfoStrat.VE
         // Using a DependencyProperty as the backing store for MinAltitude.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MinAltitudeProperty =
             DependencyProperty.Register("MinAltitude", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(double.MinValue));
-        
+
         #endregion
 
         #region MaxAltitude DP
-        
+
         /// <summary>
         /// Maximum altitude, in meters, where the pushpin is visible
         /// </summary>
@@ -220,7 +220,7 @@ namespace InfoStrat.VE
         // Using a DependencyProperty as the backing store for MaxAltitude.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MaxAltitudeProperty =
             DependencyProperty.Register("MaxAltitude", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(double.MaxValue));
-        
+
         #endregion
 
         #region Visibility DP
@@ -228,8 +228,8 @@ namespace InfoStrat.VE
         public new Visibility Visibility
         {
             get { return (Visibility)GetValue(VisibilityProperty); }
-            set 
-            { 
+            set
+            {
                 SetValue(VisibilityProperty, value);
                 AnimateUtility.StopAnimation(this, VEPushPin.OpacityProperty);
 
@@ -326,22 +326,22 @@ namespace InfoStrat.VE
         }
 
         public VEPushPin()
-        {            
+        {
             Initialize();
         }
 
         public VEPushPin(VELatLong latLong)
-        {           
+        {
             this.Latitude = latLong.Latitude;
             this.Longitude = latLong.Longitude;
             this.Altitude = latLong.Altitude;
             this.AltMode = latLong.AltMode;
             Initialize();
         }
-        
+
         public VEPushPin(VELatLong latLong, double minAltitude, double maxAltitude)
         {
-            
+
             this.Latitude = latLong.Latitude;
             this.Longitude = latLong.Longitude;
             this.Altitude = latLong.Altitude;
@@ -374,15 +374,15 @@ namespace InfoStrat.VE
         {
             base.OnApplyTemplate();
 
-            Button = (Button)this.Template.FindName("PART_button", this);
-            
+            Button = this.Template.FindName("PART_button", this) as Button;
+
             if (Button != null)
             {
                 Button.Click += new RoutedEventHandler(Button_Click);
             }
         }
 
-        public override void UpdatePosition(VEMap map)
+        public override Point? UpdatePosition(VEMap map)
         {
             if (this.Map != map)
             {
@@ -393,7 +393,7 @@ namespace InfoStrat.VE
 
             VEPushPinAltitudeEvent altEvent;
             bool isVisible;
-            Point? position = GetPosition(DisplayLatLong, out altEvent, out isVisible);
+            Point? anchorPosition = GetPosition(DisplayLatLong, out altEvent, out isVisible);
 
             if (isVisible)
             {
@@ -437,11 +437,11 @@ namespace InfoStrat.VE
                                                             0,
                                                             1);
 
-                        position = GetPosition(DisplayLatLong);
+                        anchorPosition = GetPosition(DisplayLatLong);
                     }
                 }
 
-                               
+
             }
             else
             {
@@ -456,12 +456,12 @@ namespace InfoStrat.VE
                                                             0,
                                                             0,
                                                             1);
-                    
+
                     hideClock.Completed += new EventHandler(hideClock_Completed);
                     currentState = VEPushPinState.FadingOut;
-                    
+
                     //If transitioning and has a parent
-                    if (this.parentPushPin != null && 
+                    if (this.parentPushPin != null &&
                         (altEvent == VEPushPinAltitudeEvent.TransitionAboveUpperRange))
                     {
                         AnimateUtility.AnimateElementDouble(this,
@@ -474,8 +474,8 @@ namespace InfoStrat.VE
                                                             this.parentPushPin.Longitude,
                                                             0,
                                                             1);
-                        
-                        position = GetPosition(DisplayLatLong);
+
+                        anchorPosition = GetPosition(DisplayLatLong);
                     }
                     else
                     {
@@ -486,17 +486,22 @@ namespace InfoStrat.VE
             }
 
             //Update the calculated position
-            if (position != null)
-            {
-                this.SetValue(Canvas.LeftProperty, position.Value.X - this.ActualWidth / 2);
-                this.SetValue(Canvas.TopProperty, position.Value.Y - this.ActualHeight);
-            }
-            else
+            if (anchorPosition == null || !map.IsMapLoaded)
             {
                 this.Visibility = Visibility.Collapsed;
                 this.Opacity = 0;
                 this.currentState = VEPushPinState.Hidden;
+
+                return null;
             }
+
+            Point anchorOffset = GetAnchorOffset();
+
+            double displayLeft = anchorPosition.Value.X - anchorOffset.X;
+            double displayTop = anchorPosition.Value.Y - anchorOffset.Y;
+
+            return new Point(displayLeft, displayTop);
+
         }
 
         void showClock_Completed(object sender, EventArgs e)
@@ -522,27 +527,12 @@ namespace InfoStrat.VE
             this.Button = null;
             this.parentPushPin = null;
             this.previousCameraAltitude = 0;
-            this.currentState = VEPushPinState.Visible;
 
-            VEPushPinAltitudeEvent altEvent;
-            bool isVisible;
-
-            Point? point = GetPosition(this.LatLong, out altEvent, out isVisible);
-
-            if (isVisible)
-            {
-                currentState = VEPushPinState.Visible;
-                this.Visibility = Visibility.Visible;
-                this.Opacity = 1;
-            }
-            else
-            {
-                currentState = VEPushPinState.Hidden;
-                this.Visibility = Visibility.Collapsed;
-                this.Opacity = 0;
-            }
+            this.Visibility = Visibility.Collapsed;
+            this.Opacity = 0;
+            this.currentState = VEPushPinState.Hidden;
         }
-    
+
         protected virtual void OnClick(object sender, VEPushPinClickedEventArgs e)
         {
             if (Click != null)
@@ -561,6 +551,15 @@ namespace InfoStrat.VE
         {
             if (OnHidePin != null)
                 OnHidePin(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Gets the lat/long anchor offset relative to the top-left of this control
+        /// </summary>
+        /// <returns>A point relative to the control that represents the location of the current latitude and longitude</returns>
+        protected virtual Point GetAnchorOffset()
+        {
+            return new Point(this.ActualWidth / 2, this.ActualHeight);
         }
 
         #endregion
@@ -586,7 +585,7 @@ namespace InfoStrat.VE
                 OnClick(this, args);
             }
         }
-        
+
         protected Point? GetPosition(VELatLong latLong)
         {
             VEPushPinAltitudeEvent alt;
@@ -603,65 +602,60 @@ namespace InfoStrat.VE
 
             if (this.Map != null)
             {
-                VELatLong camera = this.Map.GetCameraPosition();
-                
-                if (camera != null)
+                position = this.Map.LatLongToPoint(latLong, this);
+
+                //Not visible if no position (off screen)
+                if (position == null)
+                    isVisible = false;
+
+                //Not visible if behind planet
+                if (this.Map.IsBehindPlanet(latLong))
                 {
-                    //Might return null if lat/long is off screen or hidden
-                    position = this.Map.LatLongToPoint(latLong, this);
-
-                    //Not visible if no position (off screen)
-                    if (position == null)
-                        isVisible = false;
-
-                    //Not visible if behind planet
-                    if (this.Map.IsBehindPlanet(latLong))
-                    {
-                        isVisible = false;
-                    }
-                    
-                    //Not visible if out of altitude range
-                    double newCameraAltitude = camera.Altitude;
-
-                    if (newCameraAltitude > this.MaxAltitude ||
-                        newCameraAltitude < this.MinAltitude)
-                    {
-                        isVisible = false;
-                    }                    
-
-                    if (newCameraAltitude <= this.MaxAltitude &&
-                        newCameraAltitude >= this.MinAltitude &&
-                        previousCameraAltitude > this.MaxAltitude)
-                    {
-                        altEvent = VEPushPinAltitudeEvent.TransitionIntoUpperRange;
-                    }
-                    else if (newCameraAltitude <= this.MaxAltitude &&
-                             newCameraAltitude >= this.MinAltitude &&
-                             previousCameraAltitude < this.MinAltitude)
-                    {
-                        altEvent = VEPushPinAltitudeEvent.TransitionIntoLowerRange;
-                    }
-                    else if (newCameraAltitude > this.MaxAltitude &&
-                             previousCameraAltitude <= this.MaxAltitude &&
-                             previousCameraAltitude >= this.MinAltitude)
-                    {
-                        altEvent = VEPushPinAltitudeEvent.TransitionAboveUpperRange;
-                    }
-                    else if (newCameraAltitude < this.MinAltitude &&
-                             previousCameraAltitude <= this.MaxAltitude &&
-                             previousCameraAltitude >= this.MinAltitude)
-                    {
-                        altEvent = VEPushPinAltitudeEvent.TransitionBelowLowerRange;
-                    }
-
-                    previousCameraAltitude = newCameraAltitude;
-
-                    //Not visible if manual override
-                    if (PinVisible == false)
-                    {
-                        isVisible = false;
-                    }
+                    isVisible = false;
                 }
+
+                //Not visible if out of altitude range
+                double newCameraAltitude = Map.Altitude;
+
+                if (newCameraAltitude > this.MaxAltitude ||
+                    newCameraAltitude < this.MinAltitude)
+                {
+                    isVisible = false;
+                }
+
+                if (newCameraAltitude <= this.MaxAltitude &&
+                    newCameraAltitude >= this.MinAltitude &&
+                    previousCameraAltitude > this.MaxAltitude)
+                {
+                    altEvent = VEPushPinAltitudeEvent.TransitionIntoUpperRange;
+                }
+                else if (newCameraAltitude <= this.MaxAltitude &&
+                         newCameraAltitude >= this.MinAltitude &&
+                         previousCameraAltitude < this.MinAltitude)
+                {
+                    altEvent = VEPushPinAltitudeEvent.TransitionIntoLowerRange;
+                }
+                else if (newCameraAltitude > this.MaxAltitude &&
+                         previousCameraAltitude <= this.MaxAltitude &&
+                         previousCameraAltitude >= this.MinAltitude)
+                {
+                    altEvent = VEPushPinAltitudeEvent.TransitionAboveUpperRange;
+                }
+                else if (newCameraAltitude < this.MinAltitude &&
+                         previousCameraAltitude <= this.MaxAltitude &&
+                         previousCameraAltitude >= this.MinAltitude)
+                {
+                    altEvent = VEPushPinAltitudeEvent.TransitionBelowLowerRange;
+                }
+
+                previousCameraAltitude = newCameraAltitude;
+
+                //Not visible if manual override
+                if (PinVisible == false)
+                {
+                    isVisible = false;
+                }
+
             }
             return position;
         }

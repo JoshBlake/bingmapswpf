@@ -138,10 +138,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utilities\VisualUtility.cs" />
+    <Compile Include="VEMap\ILocationProvider.cs" />
     <Compile Include="VEMap\JumpCameraController.cs" />
     <Compile Include="VEMap\PositionStep.cs" />
     <Compile Include="VEMap\RegisteredPosition.cs" />
     <Compile Include="VEMap\VECameraChangedEventArgs.cs" />
+    <Compile Include="VEMap\VEMapItem.cs" />
     <Compile Include="VEMap\VERollPitchYaw.cs" />
     <Compile Include="Utilities\AnimateUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -162,6 +165,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\VEMapItem.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -20,7 +20,8 @@
                             VerticalAlignment="Center">
                         <Viewbox Name="PART_viewbox"
                                  HorizontalAlignment="Center"
-                                 VerticalAlignment="Center">
+                                 VerticalAlignment="Center" 
+                                 Stretch="UniformToFill">
                             <Grid Width="1024"
                                   Height="768"
                                   Name="PART_hostGrid"

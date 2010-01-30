@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Microsoft.MapPoint.Rendering3D.Cameras;
 using Microsoft.MapPoint.Rendering3D.Scene;
 using Microsoft.MapPoint.Rendering3D.State;
 using Microsoft.MapPoint.Geometry.VectorMath;
@@ -15,9 +17,12 @@ namespace InfoStrat.VE
         bool isReady = false;
         Matrix4x4D transform;
         Size view;
+        
+        private CameraData oldData;
+        public event EventHandler<EventArgs> CameraChanged;
 
-        public PositionStep(StepManager stepManager) 
-            : base (stepManager)
+        public PositionStep(StepManager stepManager)
+            : base(stepManager)
         {
             transform = new Matrix4x4D();
             view = new Size();
@@ -32,6 +37,13 @@ namespace InfoStrat.VE
                 view = camera.View.Size;
 
                 isReady = true;
+
+                if ((oldData == null) || (!AreSnapshotsEqual(oldData.Snapshot, camera.Snapshot)))
+                {
+                    CameraChanged(this,new EventArgs());                       
+                }
+       
+                oldData = camera;
             }
         }
 
@@ -53,7 +65,7 @@ namespace InfoStrat.VE
             if (v.W > 0)
             {
                 v.MultiplyBy(1.0 / v.W);
-                
+
                 Point position = new Point(
                         (int)(view.Width * (v.X + 1.0) * 0.5),
                         (int)(view.Height * (1.0 - v.Y) * 0.5));
@@ -76,6 +88,22 @@ namespace InfoStrat.VE
                 return null;
             }
         }
+        private bool AreSnapshotsEqual(GeodeticCameraSnapshot c1, GeodeticCameraSnapshot c2)
+        {
+            if (c1.AspectRatio != c2.AspectRatio) return false;
+            if (c1.FarClipPlane != c2.FarClipPlane) return false;
+            if (c1.FieldOfViewY != c2.FieldOfViewY) return false;
+            if (c1.NearClipPlane != c2.NearClipPlane) return false;
+            if (!c1.InverseTransformMatrix.Equals(c2.InverseTransformMatrix)) return false;
+            if (!c1.LocalOrientation.Equals(c2.LocalOrientation)) return false;
+            if (!c1.Orientation.Equals(c2.Orientation)) return false;
+            if (!c1.Position.Equals(c2.Position)) return false;
+            if (!c1.ProjectionMatrix.Equals(c2.ProjectionMatrix)) return false;
+            if (!c1.TransformMatrix.Equals(c2.TransformMatrix)) return false;
+            if (!c1.ViewMatrix.Equals(c2.ViewMatrix)) return false;
+            return true;
+        }
 
     }
+
 }

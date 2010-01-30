@@ -5,7 +5,23 @@ www.infostrat.com
 
 http://virtualearthwpf.codeplex.com
 
-January 4, 2010
+Release 2.1: January 30, 2010
+
+New: InfoStrat.VE.WPFTouch project adds a WPFTouchVEMap control that uses WPF 4 touch APIs (built against VS2010 Beta 2)
+New: WPFTouchVEMapSample sample application uses InfoStrat.VE.WPFTouch
+New: DataBindingSample project shows how to do advanced data binding using the fixed data template functionality
+New: Added VS2010 project files in parallel with the VS2008 projects. Use VEMapSamples/VEMapSamples.VS10.sln with VS2010 Beta 2 or later.
+New: Added VEPushPin.GetAnchorOffset virtual method so derivative types can easily change the lat/long anchoring position
+New: Created VEMapItem as the VEMap item container. Items or DataTemplates root elements should implement ILocationProvider so VEMapItem can place the element on the map.
+New: Added VEMap.IsMapLoaded property
+Bug fix: Issue 2238: Data binding using ItemTemplates are now possible, as illustrated in DataBindingSample
+Bug fix: Issue 5127: VELatLong getters/setters were reversed
+Bug fix: Issue 2337: Streching behavior is set to fill container
+Change: Pushpin performance improvements
+Change: Minor code style changes
+Change: Assembly versions set to 2.1
+
+Release 2: January 4, 2010
 
 InfoStrat.VE.VEMap:
 

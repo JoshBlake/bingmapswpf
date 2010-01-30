@@ -7,6 +7,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/InfoStrat.VE;component/Themes/VEPushPin.xaml" />
         <ResourceDictionary Source="/InfoStrat.VE;component/Themes/VEMap.xaml" />
+        <ResourceDictionary Source="/InfoStrat.VE;component/Themes/VEMapItem.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

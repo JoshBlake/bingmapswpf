@@ -12,78 +12,70 @@ namespace InfoStrat.VE
 
     public class VELatLong
     {
-        double lat;
-        double lon;
-        double alt;
-        VEAltMode altMode;
+        #region Fields
+
+        double _lat;
+        double _lon;
+
+        #endregion
+
+        #region Constructors
 
         public VELatLong()
+            : this(0, 0, 0, VEAltMode.FromGround)
         {
-            this.lat = 0;
-            this.lon = 0;
-            this.alt = 0;
-            this.altMode = VEAltMode.FromGround;
         }
 
         public VELatLong(double lat, double lon)
+            : this(lat, lon, 0, VEAltMode.FromGround)
         {
-            this.lat = lat;
-            this.lon = lon;
-            this.alt = 0;
-            this.altMode = VEAltMode.FromGround;
         }
 
         public VELatLong(double lat, double lon, double alt)
+            : this(lat, lon, alt, VEAltMode.FromGround)
         {
-            this.lat = lat;
-            this.lon = lon;
-            this.alt = alt;
-            this.altMode = VEAltMode.FromGround;
         }
 
         public VELatLong(double lat, double lon, double alt, VEAltMode altMode)
         {
-            this.lat = lat;
-            this.lon = lon;
-            this.alt = alt;
-            this.altMode = altMode;
+            this._lat = lat;
+            this._lon = lon;
+            this.Altitude = alt;
+            this.AltMode = altMode;
         }
 
         internal VELatLong(LatLonAlt lla)
+            : this(lla.Latitude, lla.Longitude, lla.Latitude, VEAltMode.FromGround)
         {
-            this.lat = lla.Latitude;
-            this.lon = lla.Longitude;
-            this.alt = lla.Altitude;
-            this.altMode = VEAltMode.FromGround;
         }
+
+        #endregion
+
+        #region Properties
 
         public double Latitude
         {
-            get { return this.lat; }
-            set { value = this.lat; }
+            get { return this._lat; }
+            set { this._lat = value; }
         }
 
         public double Longitude
         {
-            get { return this.lon; }
-            set { value = this.lon; }
+            get { return this._lon; }
+            set { this._lon = value; }
         }
 
-        public double Altitude
-        {
-            get { return this.alt; }
-            set { value = this.alt; }
-        }
+        public double Altitude { get; set; }
 
-        public VEAltMode AltMode
-        {
-            get { return this.altMode; }
-            set { value = this.altMode; }
-        }
+        public VEAltMode AltMode { get; set; }
+
+        #endregion
+
+        #region Methods
 
         public override string ToString()
         {
-            return this.lat + ", " + this.lon;
+            return this._lat + ", " + this._lon;
         }
 
         internal LatLonAlt ToLatLonAlt()
@@ -92,7 +84,7 @@ namespace InfoStrat.VE
         }
 
         public Vector3D ToVector()
-        {            
+        {
             return ToLatLonAlt().GetVector();
         }
 
@@ -100,5 +92,7 @@ namespace InfoStrat.VE
         {
             return LatLonAlt.GreatCircleDistance(a.ToLatLonAlt(), b.ToLatLonAlt());
         }
+
+        #endregion
     }
 }

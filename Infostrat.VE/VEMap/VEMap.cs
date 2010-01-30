@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Xml;
 using System.Windows;
@@ -48,8 +49,9 @@ namespace InfoStrat.VE
         Size veSurfaceSize;
 
         bool isTemplateLoaded;
-        bool isControlLoaded;
-        bool isDependencyPropertiesDirty;
+        bool _isMapLoaded;
+        bool isMapPositionDirty = false;
+        bool isItemsPositionDirty = false;
         private bool disposed = false;
 
         private delegate void DelegateGlobeRedraw();
@@ -57,7 +59,7 @@ namespace InfoStrat.VE
 
         Microsoft.MapPoint.Graphics3D.Types.Surface surfCpy;
 
-        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        readonly Stopwatch stopwatch = new Stopwatch();
 
         Dictionary<int, EventHandler> onFlyToEndCallbacks;
 
@@ -145,16 +147,10 @@ namespace InfoStrat.VE
         {
             get
             {
-                if (this.globeControl != null &&
-                    this.globeControl.Host != null &&
-                    this.globeControl.Host.WorldEngine != null)
-                {
-                    return this.globeControl.Host.WorldEngine.Display3DCursor;
-                }
-                else
-                {
-                    return false;
-                }
+                return this.globeControl != null &&
+                       this.globeControl.Host != null &&
+                       this.globeControl.Host.WorldEngine != null &&
+                       this.globeControl.Host.WorldEngine.Display3DCursor;
             }
             set
             {
@@ -173,17 +169,11 @@ namespace InfoStrat.VE
         {
             get
             {
-                if (this.globeControl != null &&
-                    this.globeControl.Host != null &&
-                    this.globeControl.Host.Ready &&
-                    this.globeControl.Host.WorldEngine != null)
-                {
-                    return this.globeControl.Host.WorldEngine.ShowBuildings;
-                }
-                else
-                {
-                    return false;
-                }
+                return this.globeControl != null &&
+                       this.globeControl.Host != null &&
+                       this.globeControl.Host.Ready &&
+                       this.globeControl.Host.WorldEngine != null &&
+                       this.globeControl.Host.WorldEngine.ShowBuildings;
             }
             set
             {
@@ -202,17 +192,11 @@ namespace InfoStrat.VE
         {
             get
             {
-                if (this.globeControl != null &&
-                    this.globeControl.Host != null &&
-                    this.globeControl.Host.Ready &&
-                    this.globeControl.Host.WorldEngine != null)
-                {
-                    return this.globeControl.Host.WorldEngine.ShowBuildingTextures;
-                }
-                else
-                {
-                    return false;
-                }
+                return this.globeControl != null &&
+                       this.globeControl.Host != null &&
+                       this.globeControl.Host.Ready &&
+                       this.globeControl.Host.WorldEngine != null &&
+                       this.globeControl.Host.WorldEngine.ShowBuildingTextures;
             }
             set
             {
@@ -224,6 +208,14 @@ namespace InfoStrat.VE
                 }
 
                 NotifyPropertyChanged("ShowBuildingTextures");
+            }
+        }
+
+        public bool IsMapLoaded
+        {
+            get
+            {
+                return _isMapLoaded;
             }
         }
 
@@ -324,7 +316,7 @@ namespace InfoStrat.VE
             }
 
 
-            map.isDependencyPropertiesDirty = true;
+            map.isMapPositionDirty = true;
         }
 
         #endregion
@@ -337,10 +329,10 @@ namespace InfoStrat.VE
 
         protected void NotifyPropertyChanged(String info)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
+            if (PropertyChanged == null)
+                return;
+
+            PropertyChanged(this, new PropertyChangedEventArgs(info));
         }
 
         #endregion
@@ -385,9 +377,7 @@ namespace InfoStrat.VE
             canvasPushPin = null;
 
             isTemplateLoaded = false;
-            isControlLoaded = false;
-
-            isDependencyPropertiesDirty = false;
+            _isMapLoaded = false;
 
             appDomainHost = null;
 
@@ -416,7 +406,7 @@ namespace InfoStrat.VE
             this.Unloaded -= VEMap_Unloaded;
 
             //Are we in Visual Studio Designer?
-            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
+            if (DesignerProperties.GetIsInDesignMode(this))
             {
                 return;
             }
@@ -432,7 +422,7 @@ namespace InfoStrat.VE
 
             registeredPositions = new Dictionary<object, RegisteredPosition>();
 
-            Microsoft.MapPoint.Rendering3D.GlobeControl.GlobeControlInitializationOptions options = new GlobeControl.GlobeControlInitializationOptions();
+            GlobeControl.GlobeControlInitializationOptions options = new GlobeControl.GlobeControlInitializationOptions();
             // prevents the globeControl from trying to create a render thread
             options.DelayRenderThreadCreation = true;
 
@@ -495,6 +485,47 @@ namespace InfoStrat.VE
             }
         }
 
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new VEMapItem();
+        }
+
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return (item is VEMapItem);
+        }
+
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+
+            VEMapItem mapitem = element as VEMapItem;
+            if (mapitem == null)
+                return;
+
+            if (this.ItemTemplateSelector != null)
+            {
+                mapitem.ContentTemplate = this.ItemTemplateSelector.SelectTemplate(item, element);
+            }
+            /*
+            mapitem.LayoutUpdated += new EventHandler((s, e) => { 
+                if (_isMapLoaded) 
+                    mapitem.UpdatePosition(this); });
+            */
+        }
+
+        protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        {
+            base.OnItemsSourceChanged(oldValue, newValue);
+            isItemsPositionDirty = true;
+        }
+
+        protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged(e);
+            isItemsPositionDirty = true;
+        }
+
         #endregion
 
         #region Public Map Movement Helpers
@@ -518,7 +549,7 @@ namespace InfoStrat.VE
         /// <param name="dy">Y change in pointer position</param>
         public virtual void DoMapMove(double dx, double dy)
         {
-            DoMapMove(dx, dy, new Point(this.targetImage.Width / 2, this.targetImage.Height / 2));
+            DoMapMove(dx, dy, new Point(this.ActualWidth / 2.0, this.ActualHeight / 2.0));
         }
 
         /// <summary>
@@ -542,19 +573,19 @@ namespace InfoStrat.VE
                 return;
 
             int x = (int)MathHelper.MapValue(center.X - dx,
-                                                0, this.targetImage.ActualWidth,
+                                                0, this.ActualWidth,
                                                 0, globeControl.Width);
             int y = (int)MathHelper.MapValue(center.Y - dy,
-                                                0, this.targetImage.ActualHeight,
+                                                0, this.ActualHeight,
                                                 0, globeControl.Height);
 
             System.Drawing.Point newPosition = new System.Drawing.Point(x, y);
 
             int x2 = (int)MathHelper.MapValue(center.X,
-                                                0, this.targetImage.ActualWidth,
+                                                0, this.ActualWidth,
                                                 0, globeControl.Width);
             int y2 = (int)MathHelper.MapValue(center.Y,
-                                                0, this.targetImage.ActualHeight,
+                                                0, this.ActualHeight,
                                                 0, globeControl.Height);
 
             System.Drawing.Point oldPosition = new System.Drawing.Point(x2, y2);
@@ -611,7 +642,7 @@ namespace InfoStrat.VE
         /// <param name="deltaZoom">A zero-centered zoom-factor. Positive values zoom in, negative values zoom out.</param>
         public virtual void DoMapZoom(double deltaZoom)
         {
-            DoMapZoom(deltaZoom, new Point(targetImage.ActualWidth / 2, targetImage.ActualHeight / 2));
+            DoMapZoom(deltaZoom, new Point(this.ActualWidth / 2, this.ActualHeight / 2));
         }
 
         /// <summary>
@@ -633,8 +664,8 @@ namespace InfoStrat.VE
             if (cameraStep == null)
                 return;
 
-            int x = (int)MathHelper.MapValue(center.X, 0, this.viewbox.ActualWidth, 0, globeControl.Width);
-            int y = (int)MathHelper.MapValue(center.Y, 0, this.viewbox.ActualHeight, 0, globeControl.Height);
+            int x = (int)MathHelper.MapValue(center.X, 0, this.ActualWidth, 0, globeControl.Width);
+            int y = (int)MathHelper.MapValue(center.Y, 0, this.ActualHeight, 0, globeControl.Height);
 
             System.Drawing.Point pointerPosition = new System.Drawing.Point(x, y);
 
@@ -678,7 +709,7 @@ namespace InfoStrat.VE
         /// <param name="deltaAngle">The angle to rotate, in degrees</param>
         public virtual void DoMapPivot(double deltaAngle)
         {
-            DoMapPivot(deltaAngle, new Point(targetImage.ActualWidth / 2, targetImage.ActualHeight / 2));
+            DoMapPivot(deltaAngle, new Point(this.ActualWidth / 2, this.ActualHeight / 2));
         }
 
         /// <summary>
@@ -705,8 +736,8 @@ namespace InfoStrat.VE
                 return;
 
             //Map the rotation value from control screen coordinates to viewbox/VE coordinates
-            int x = (int)MathHelper.MapValue(center.X, 0, this.targetImage.ActualWidth, 0, globeControl.Width);
-            int y = (int)MathHelper.MapValue(center.Y, 0, this.targetImage.ActualHeight, 0, globeControl.Height);
+            int x = (int)MathHelper.MapValue(center.X, 0, this.ActualWidth, 0, globeControl.Width);
+            int y = (int)MathHelper.MapValue(center.Y, 0, this.ActualHeight, 0, globeControl.Height);
 
 
             System.Drawing.Point pointerPosition = new System.Drawing.Point(x, y);
@@ -806,26 +837,26 @@ namespace InfoStrat.VE
 
         protected virtual void DoControlInputDown(Point p)
         {
-            if (this.globeControl != null)
-            {
-                int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
-                int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+            if (this.globeControl == null)
+                return;
 
-                MouseEventArgs eventArgs = new MouseEventArgs(MouseButtons.Left, 1, x, y, 0);
-                globeControl.DoMouseDown(eventArgs);
-            }
+            int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
+            int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+
+            MouseEventArgs eventArgs = new MouseEventArgs(MouseButtons.Left, 1, x, y, 0);
+            globeControl.DoMouseDown(eventArgs);
         }
 
         protected virtual void DoControlInputUp(Point p)
         {
-            if (this.globeControl != null)
-            {
-                int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
-                int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+            if (this.globeControl == null)
+                return;
 
-                MouseEventArgs eventArgs = new MouseEventArgs(MouseButtons.Left, 1, x, y, 0);
-                globeControl.DoMouseUp(eventArgs);
-            }
+            int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
+            int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+
+            MouseEventArgs eventArgs = new MouseEventArgs(MouseButtons.Left, 1, x, y, 0);
+            globeControl.DoMouseUp(eventArgs);
         }
 
         protected virtual void DoControlInputMove(Point p, bool isHover)
@@ -839,39 +870,39 @@ namespace InfoStrat.VE
                 DoControlInputDown(p);
             }
 
-            if (this.globeControl != null)
-            {
-                int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
-                int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
-                MouseEventArgs eventArgs;
+            if (this.globeControl == null)
+                return;
 
-                if (isHover)
-                    eventArgs = new MouseEventArgs(MouseButtons.None, 0, x, y, 0);
-                else
-                    eventArgs = new MouseEventArgs(MouseButtons.Left, 1, x, y, 0);
+            int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
+            int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+            MouseEventArgs eventArgs;
 
-                globeControl.DoMouseMove(eventArgs);
-            }
+            if (isHover)
+                eventArgs = new MouseEventArgs(MouseButtons.None, 0, x, y, 0);
+            else
+                eventArgs = new MouseEventArgs(MouseButtons.Left, 1, x, y, 0);
+
+            globeControl.DoMouseMove(eventArgs);
         }
 
         protected virtual void DoControlInputDoubleClick(Point p)
         {
-            if (this.globeControl != null)
-            {
-                int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
-                int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+            if (this.globeControl == null)
+                return;
 
-                MouseEventArgs eventArgs = new MouseEventArgs(MouseButtons.Left, 2, x, y, 0);
-                globeControl.DoMouseDoubleClick(eventArgs);
-            }
+            int x = (int)MathHelper.MapValue(p.X, 0, this.ActualWidth, 0, globeControl.Width);
+            int y = (int)MathHelper.MapValue(p.Y, 0, this.ActualHeight, 0, globeControl.Height);
+
+            MouseEventArgs eventArgs = new MouseEventArgs(MouseButtons.Left, 2, x, y, 0);
+            globeControl.DoMouseDoubleClick(eventArgs);
         }
 
         protected virtual void DoControlInputWheelZoom(Point p, int delta)
         {
-            if (this.globeControl != null)
-            {
-                this.globeControl.Host.BindingsManager.Mouse.Wheel(delta);
-            }
+            if (this.globeControl == null)
+                return;
+
+            this.globeControl.Host.BindingsManager.Mouse.Wheel(delta);
         }
 
         #endregion
@@ -928,12 +959,11 @@ namespace InfoStrat.VE
 
         private void InitGlobeControl()
         {
-            if (!isControlLoaded)
+            if (!_isMapLoaded)
             {
-                isControlLoaded = true;
-
+                _isMapLoaded = true;
                 //Are we in Visual Studio Designer?
-                if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
+                if (!DesignerProperties.GetIsInDesignMode(this))
                 {
                     this.globeControl.Host.RenderEngine.Initialized += new EventHandler(RenderEngine_Initialized);
 
@@ -949,7 +979,7 @@ namespace InfoStrat.VE
 
         void VEMap_Unloaded(object sender, RoutedEventArgs e)
         {
-            isControlLoaded = false;
+            _isMapLoaded = false;
 
             this.winVE.Close();
         }
@@ -967,7 +997,7 @@ namespace InfoStrat.VE
         private void UpdateMapStyle(VEMapStyle value)
         {
             //Are we in Visual Studio Designer?  Is the control loaded yet?
-            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this) && isControlLoaded)
+            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this) && _isMapLoaded)
             {
                 switch (value)
                 {
@@ -1014,6 +1044,8 @@ namespace InfoStrat.VE
             NotifyPropertyChanged("ShowBuildings");
             NotifyPropertyChanged("ShowBuildingTextures");
 
+            globeControl.CameraChanged += globeControl_CameraChanged;
+
             StartVERendering();
 
             this.OnMapLoaded(EventArgs.Empty);
@@ -1022,11 +1054,21 @@ namespace InfoStrat.VE
         protected virtual void OnMapLoaded(EventArgs e)
         {
             UpdateDPFromMap();
+            UpdateMapItems();
 
             if (MapLoaded != null)
             {
                 MapLoaded(this, e);
             }
+        }
+
+        #endregion
+
+        #region globeControl Camera Changed Event
+
+        void globeControl_CameraChanged(object sender, EventArgs e)
+        {
+            isItemsPositionDirty = true;
         }
 
         #endregion
@@ -1039,8 +1081,9 @@ namespace InfoStrat.VE
             {
                 List<LatLonAlt> lla = new List<LatLonAlt>();
 
-                foreach (VELatLong item in shape.Points)
+                for (int index = 0; index < shape.Points.Count; index++)
                 {
+                    VELatLong item = shape.Points[index];
                     lla.Add(item.ToLatLonAlt());
                 }
 
@@ -1102,6 +1145,7 @@ namespace InfoStrat.VE
 
         public bool IsBehindPlanet(VELatLong latLong)
         {
+            return false;
             VELatLong cameraLatLong = GetCameraPosition();
 
             double distance = VELatLong.GreatCircleDistance(cameraLatLong, latLong);
@@ -1114,12 +1158,8 @@ namespace InfoStrat.VE
 
             Ray3D ray = new Ray3D(cameraPosition, vector);
             Vector3D groundPosition;
-            if (globeControl.Host.WorldEngine.IntersectsGround(ray, vector.Length(), out groundPosition))
-            {
-                return true;
-            }
 
-            return false;
+            return globeControl.Host.WorldEngine.IntersectsGround(ray, vector.Length(), out groundPosition);
         }
 
         public void RemoveRegisteredPosition(object key)
@@ -1142,16 +1182,17 @@ namespace InfoStrat.VE
                 RegisteredPosition rp = new RegisteredPosition();
 
                 rp.Position = lla;
+                isItemsPositionDirty = true;
+
+                
                 //This call to update the surface elevation is slower than the ILocationListener way, but will only be needed
                 //once in a while when the latLong is changed
                 double surfaceElevation = this.globeControl.Host.WorldEngine.GetSurfaceElevation(lla.LatLon);
 
-                rp.Position = lla;
-
                 LatLonAlt newLLA = lla;
                 newLLA.Altitude += surfaceElevation;
                 rp.Vector = newLLA.GetVector();
-
+                
                 this.globeControl.Host.WorldEngine.AddLocationListener(rp);
 
                 registeredPositions.Add(key, rp);
@@ -1165,6 +1206,9 @@ namespace InfoStrat.VE
 
         public Point? LatLongToPoint(VELatLong latLong, object key)
         {
+            Random r = new Random();
+            Point dummy = new Point(r.Next(100, 700), r.Next(100, 700));
+            //return dummy;
 
             if (this.globeControl == null ||
                 this.globeControl.PositionStep == null)
@@ -1192,12 +1236,11 @@ namespace InfoStrat.VE
                     double surfaceElevation = this.globeControl.Host.WorldEngine.GetSurfaceElevation(lla.LatLon);
 
                     rp.Position = lla;
-
+                    isItemsPositionDirty = true;
                     LatLonAlt newLLA = lla;
                     newLLA.Altitude += surfaceElevation;
                     rp.Vector = newLLA.GetVector();
                 }
-
                 position = this.globeControl.PositionStep.VectorToScreenPosition(rp.Vector);
 
             }
@@ -1218,19 +1261,16 @@ namespace InfoStrat.VE
                                          0,
                                          globeControl.Width,
                                          0,
-                                         targetImage.Width); //ActualWidth
+                                         this.targetImage.ActualWidth); //ActualWidth
                 double y = (int)MathHelper.MapValue(position.Value.Y,
                                          0,
                                          globeControl.Height,
                                          0,
-                                         targetImage.Height); //ActualHeight
-                return new System.Windows.Point(x, y);
-            }
-            else
-            {
-                return null;
+                                         this.targetImage.ActualHeight); //ActualHeight
+                return new Point(x, y);
             }
 
+            return null;
         }
 
         public VELatLong PointToLatLong(Point? point)
@@ -1247,12 +1287,12 @@ namespace InfoStrat.VE
 
             double x = (int)MathHelper.MapValue(point.Value.X,
                                          0,
-                                         targetImage.ActualWidth,
+                                         this.targetImage.ActualWidth,
                                          0,
                                          globeControl.Width);
             double y = (int)MathHelper.MapValue(point.Value.Y,
                                      0,
-                                     targetImage.ActualHeight,
+                                     this.targetImage.ActualHeight,
                                      0,
                                      globeControl.Height);
 
@@ -1294,7 +1334,7 @@ namespace InfoStrat.VE
         public void FlyTo(VELatLong latLong, double pitch, double yaw, double altitude, EventHandler callback)
         {
 
-            Microsoft.MapPoint.Rendering3D.Control.CameraParameters cam = new Microsoft.MapPoint.Rendering3D.Control.CameraParameters();
+            CameraParameters cam = new CameraParameters();
             cam.Speed = 1;
             cam.AccelPeriod = .2;
             cam.DecelPeriod = .9;
@@ -1346,12 +1386,9 @@ namespace InfoStrat.VE
                     {
                         foreach (KeyValuePair<int, EventHandler> kvp in onFlyToEndCallbacks)
                         {
-                            if (kvp.Key == eventID)
+                            if (kvp.Key == eventID && kvp.Value != null)
                             {
-                                if (kvp.Value != null)
-                                {
-                                    kvp.Value(this, EventArgs.Empty);
-                                }
+                                kvp.Value(this, EventArgs.Empty);
                             }
                         }
                     }
@@ -1421,7 +1458,7 @@ namespace InfoStrat.VE
             if (this.globeControl.Host.Navigation.CameraPosition == null)
                 return new System.Windows.Media.Media3D.Vector3D(0, 0, 0);
 
-            Microsoft.MapPoint.Geometry.VectorMath.Vector3D vec = this.globeControl.Host.Navigation.CameraPosition.Vector;
+            Vector3D vec = this.globeControl.Host.Navigation.CameraPosition.Vector;
 
             return new System.Windows.Media.Media3D.Vector3D(vec.X, vec.Y, vec.Z);
         }
@@ -1450,7 +1487,8 @@ namespace InfoStrat.VE
 
         private void UpdateMapFromDP()
         {
-            JumpTo(this.VELatLong, this.Roll, this.Pitch, this.Yaw, this.Altitude);
+            if (_isMapLoaded)
+                JumpTo(this.VELatLong, this.Roll, this.Pitch, this.Yaw, this.Altitude);
         }
 
         private void UpdateDPFromMap()
@@ -1482,8 +1520,6 @@ namespace InfoStrat.VE
                 }
             }
         }
-
-
 
         #endregion
 
@@ -1695,10 +1731,23 @@ namespace InfoStrat.VE
 
         void CompositionTarget_Rendering(object sender, EventArgs e)
         {
+            if (isMapPositionDirty)
+            {
+                UpdateMapFromDP();
+            }
+            else
+            {
+                UpdateDPFromMap();
+            }
+            isMapPositionDirty = false;
+
             if (!stopwatch.IsRunning)
                 stopwatch.Start();
             if (stopwatch.ElapsedMilliseconds > 30)
             {
+                if (isMapPositionDirty || isItemsPositionDirty)
+                    this.globeControl.Host.NeedUpdate();
+
                 this.globeControl.Host.RenderEngine.ManuallyRenderNextFrame();
                 stopwatch.Reset();
             }
@@ -1734,7 +1783,7 @@ namespace InfoStrat.VE
                 }
                 catch (ArgumentException ex)
                 {
-                    isControlLoaded = false;
+                    _isMapLoaded = false;
 
                     //Backbuffer might be lost after sleeping
                     Debug.WriteLine("Error in InvalidateVESurface(): " + ex.ToString());
@@ -1745,36 +1794,26 @@ namespace InfoStrat.VE
                 }
             }
 
-            if (isControlLoaded)
-            {
-                RaiseViewChanged();
-            }
-
+            //Needs to be called every update. VE throttles itself.
+            UpdateMapItems();
         }
 
-        private void RaiseViewChanged()
+        // Positions all WPF items in the Items collection in proper lla position over top of the 
+        public void UpdateMapItems()
         {
-            foreach (object o in this.Items)
-            {
-                VEShape shape = o as VEShape;
-                if (shape != null)
-                {
-                    shape.UpdatePosition(this);
-                }
-            }
-            if (isControlLoaded)
-            {
-                if (isDependencyPropertiesDirty)
-                {
-                    UpdateMapFromDP();
-                }
-                else
-                {
-                    UpdateDPFromMap();
-                }
+            if (!_isMapLoaded)
+                return;
 
-                isDependencyPropertiesDirty = false;
+            foreach (object item in Items)
+            {
+                VEMapItem container = ItemContainerGenerator.ContainerFromItem(item) as VEMapItem;
+
+                if (container != null)
+                {
+                    container.UpdatePosition(this);
+                }
             }
+            isItemsPositionDirty = false;
         }
 
         #endregion
@@ -1785,6 +1824,7 @@ namespace InfoStrat.VE
         {
             NotifyPropertyChanged("GlobeWidth");
             NotifyPropertyChanged("GlobeHeight");
+            isItemsPositionDirty = true;
         }
 
         #endregion

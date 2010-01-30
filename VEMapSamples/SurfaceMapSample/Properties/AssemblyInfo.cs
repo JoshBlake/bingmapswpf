@@ -13,11 +13,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SurfaceMapSample")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("InfoStrat.VE: Bing Maps 3D control for WPF, Surface, and Windows 7 Touch")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SurfaceMapSample")]
-[assembly: AssemblyCopyright("Copyright @  2009")]
+[assembly: AssemblyCompany("Information Strategies, Inc.")]
+[assembly: AssemblyProduct("InfoStrat.VE")]
+[assembly: AssemblyCopyright("Copyright © 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
@@ -59,4 +59,4 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("2.1.*")]

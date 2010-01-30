@@ -1,0 +1,241 @@
+﻿<Window x:Class="WPFVEMapSample.WPFVEMapSampleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ve="clr-namespace:InfoStrat.VE.WPFTouch;assembly=InfoStrat.VE.WPFTouch"
+        Title="WPFTouchVEMap Sample"
+        WindowState="Maximized"
+        Icon="Virtual_Earth_Icon.png">
+    <Grid>
+
+        <ve:WPFTouchVEMap x:Name="map"
+                          MapStyle="Hybrid"
+                          LatLong="38.9444195081574,-77.0630161230201"
+                          MapLoaded="map_MapLoaded">
+            <ve:WPFTouchVEPushPin Latitude="38.9444195081574"
+                                  Longitude="-77.0630161230201"
+                                  Click="VEPushPin_Click">
+                <StackPanel>
+                    <TextBlock Text="Hello, WPF 4 Touch!"
+                               HorizontalAlignment="Center"
+                               FontSize="20" />
+                    <TextBlock Text="www.infostrat.com"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+            </ve:WPFTouchVEPushPin>
+        </ve:WPFTouchVEMap>
+
+        <DockPanel Margin="20,10,0,10">
+            <Border DockPanel.Dock="Left"
+                    CornerRadius="20"
+                    Background="#AAFFFFFF">
+                <ScrollViewer Margin="20">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Lat/Long: "
+                                       Margin="0,0,10,0" />
+                            <TextBox Name="txtLong"
+                                     Width="200"
+                                     Text="{Binding ElementName=map, Path=LatLong}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Altitude: "
+                                       Margin="0,0,10,0" />
+                            <TextBox Name="txtAltitude"
+                                     Width="200"
+                                     Text="{Binding ElementName=map, Path=Altitude}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Roll: "
+                                       Margin="0,0,10,0" />
+                            <TextBox Name="txtRoll"
+                                     Width="200"
+                                     Text="{Binding ElementName=map, Path=Roll}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Pitch: "
+                                       Margin="0,0,10,0" />
+                            <TextBox Name="txtPitch"
+                                     Width="200"
+                                     Text="{Binding ElementName=map, Path=Pitch}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Yaw: "
+                                       Margin="0,0,10,0" />
+                            <TextBox Name="txtYaw"
+                                     Width="200"
+                                     Text="{Binding ElementName=map, Path=Yaw}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show 3D Cursor: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxCursor"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=Show3DCursor}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show Buildings: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxBuildings"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=ShowBuildings}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Show Building Textures: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxBuildingTextures"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=ShowBuildingTextures}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Style: "
+                                       Margin="0,0,10,0" />
+                            <TextBox Name="txtStyle"
+                                     Width="200"
+                                     Text="{Binding ElementName=map, Path=MapStyle}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="10"
+                                    HorizontalAlignment="Center">
+                            <Button Name="btnStyleRoad"
+                                    Click="btnStyleRoad_Click">Road</Button>
+                            <Button Name="btnStyleHybrid"
+                                    Margin="10,0,10,0"
+                                    Click="btnStyleHybrid_Click">Hybrid</Button>
+                            <Button Name="btnStyleAerial"
+                                    Click="btnStyleAerial_Click">Aerial</Button>
+                        </StackPanel>
+                        <Button HorizontalAlignment="Center"
+                                Margin="10"
+                                Name="btnUp"
+                                Content="Up"
+                                Click="btnUp_Click" />
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0">
+
+                            <Button HorizontalAlignment="Center"
+                                    Margin="10"
+                                    Name="btnLeft"
+                                    Content="Left"
+                                    Click="btnLeft_Click" />
+
+                            <Button HorizontalAlignment="Center"
+                                    Margin="10"
+                                    Name="btnDown"
+                                    Content="Down"
+                                    Click="btnDown_Click" />
+
+                            <Button HorizontalAlignment="Center"
+                                    Margin="10"
+                                    Name="btnRight"
+                                    Content="Right"
+                                    Click="btnRight_Click" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center">
+                            <Button HorizontalAlignment="Center"
+                                    Margin="10"
+                                    Name="btnZoomIn"
+                                    Content="Zoom In"
+                                    Click="btnZoomIn_Click" />
+
+                            <Button HorizontalAlignment="Center"
+                                    Margin="10"
+                                    Name="btnZoomOut"
+                                    Content="Zoom Out"
+                                    Click="btnZoomOut_Click" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Pan Sensitivity:" />
+                            <Slider Minimum="0"
+                                    Maximum="10"
+                                    SmallChange=".5"
+                                    Width="200"
+                                    Value="{Binding ElementName=map, Path=PanSensitivity}" />
+                            <TextBox Text="{Binding ElementName=map, Path=PanSensitivity}" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Zoom Sensitivity:" />
+                            <Slider Minimum="0"
+                                    Maximum="20"
+                                    SmallChange="0.5"
+                                    Width="200"
+                                    Value="{Binding ElementName=map, Path=ZoomSensitivity}" />
+                            <TextBox Text="{Binding ElementName=map, Path=ZoomSensitivity}" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Tilt Sensitivity:" />
+                            <Slider Minimum="0"
+                                    Maximum="1"
+                                    SmallChange="0.02"
+                                    Width="200"
+                                    Value="{Binding ElementName=map, Path=TiltSensitivity}" />
+                            <TextBox Text="{Binding ElementName=map, Path=TiltSensitivity}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,20,0,0">
+                            <TextBlock Text="Map Manipulation Mode:"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding ElementName=map, Path=MapManipulationMode}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Toggle Tilt mode:"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
+                            <ToggleButton Name="btnTiltMode"
+                                          VerticalAlignment="Center"
+                                          Click="btnTiltMode_Click"
+                                          Width="130"
+                                          Height="40"
+                                          Content="Toggle Tilt Mode" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,20,0,0">
+                            <TextBlock Text="Pan Enabled: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxPanEnabled"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=IsPanEnabled}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Zoom Enabled: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxZoomEnabled"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=IsZoomEnabled}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Pivot Enabled: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxPivotEnabled"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=IsPivotEnabled}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Tilt Enabled: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxTiltEnabled"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=IsTiltEnabled}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Spin Enabled: "
+                                       Margin="0,0,10,0" />
+                            <CheckBox Name="cbxSpinEnabled"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ElementName=map, Path=IsSpinEnabled}" />
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+            <Grid>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

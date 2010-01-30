@@ -11,6 +11,7 @@ namespace InfoStrat.VE
     public class PublicEventsGlobeControl : GlobeControl
     {
         PositionStep positionStep = null;
+        public event EventHandler<EventArgs> CameraChanged;
 
         internal PositionStep PositionStep
         {
@@ -59,11 +60,15 @@ namespace InfoStrat.VE
                 this.Host.RenderEngine.ManuallyRenderNextFrame(); //make sure it is ready
             }
             positionStep = new PositionStep(this.Host.RenderEngine.StepManager);
-
+            positionStep.CameraChanged += positionStep_CameraChanged;
             this.Host.RenderEngine.StepManager.InsertBefore(typeof(RenderStep), positionStep);
 
         }
 
+        private void positionStep_CameraChanged(object sender, EventArgs args)
+        {
+            CameraChanged(sender, args);
+        }
         public void DoKeyDown(KeyEventArgs e)
         {
             this.OnKeyDown(e);

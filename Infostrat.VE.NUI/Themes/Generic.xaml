@@ -5,6 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/InfoStrat.VE.NUI;component/SurfaceVEMap/SurfaceVEPushPin.xaml" />
         <ResourceDictionary Source="/InfoStrat.VE.NUI;component/SurfaceVEMap/SurfaceVEMap.xaml" />
+        <ResourceDictionary Source="/InfoStrat.VE.NUI;component/SurfaceVEMap/ExpandingSurfaceVEPushPin.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

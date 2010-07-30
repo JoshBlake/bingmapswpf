@@ -40,6 +40,8 @@ namespace InfoStrat.VE
 
 	    public VEShapeType ShapeType { get; set; }
 
+        public int ZIndex { get; set; }
+
 	    #endregion
 
         #region Constructors
@@ -47,6 +49,7 @@ namespace InfoStrat.VE
 	    protected VEShape()
         {
             this._points = new Collection<VELatLong>();
+            ZIndex = 0;
         }
         
         #endregion
@@ -62,6 +65,11 @@ namespace InfoStrat.VE
         {
             this._map = map;
             return null;
+        }
+
+        public virtual int GetZIndex()
+        {
+            return ZIndex;
         }
 
         #endregion

@@ -16,20 +16,33 @@
     <Grid Background="{StaticResource WindowBackground}"
           TextBlock.Foreground="Black">
         <map:SurfaceVEMap x:Name="map"
-                        MapStyle="Hybrid"
-                        LatLong="38.9444195081574,-77.0630161230201"
-                        MapLoaded="map_MapLoaded">
+                          MapStyle="Hybrid"
+                          LatLong="38.9444195081574,-77.0630161230201"
+                          MapLoaded="map_MapLoaded">
             <map:SurfaceVEPushPin Latitude="38.9444195081574"
-                                Longitude="-77.0630161230201"
-                                Click="SurfacePushPin_Click">
+                                  Longitude="-77.0630161230201"
+                                  Click="SurfacePushPin_Click">
                 <StackPanel>
                     <TextBlock Text="Hello, Surface!"
                                HorizontalAlignment="Center"
                                FontSize="20" />
-                    <TextBlock Text="www.infostrat.com" 
-                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="www.infostrat.com"
+                               HorizontalAlignment="Center" />
                 </StackPanel>
             </map:SurfaceVEPushPin>
+            <map:ExpandingSurfaceVEPushPin Latitude="38.9444195081574"
+                                           Longitude="-78.0630161230201">
+                <TextBlock Text="Title" />
+                <map:ExpandingSurfaceVEPushPin.Details>
+                    <StackPanel>
+                        <TextBlock Text="Details" />
+                        <s:SurfaceButton Content="button"
+                                         Width="100"
+                                         Height="60"
+                                         Click="SurfaceButton_Click" />
+                    </StackPanel>
+                </map:ExpandingSurfaceVEPushPin.Details>
+            </map:ExpandingSurfaceVEPushPin>
         </map:SurfaceVEMap>
         <DockPanel Margin="20,10,0,10">
             <Border DockPanel.Dock="Left"
@@ -39,200 +52,206 @@
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Lat/Long: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceTextBox Name="txtLong"
-                                          Width="200"
-                                          Text="{Binding ElementName=map, Path=LatLong}" />
+                                              Width="200"
+                                              Text="{Binding ElementName=map, Path=LatLong}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Altitude: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceTextBox Name="txtAltitude"
-                                          Width="200"
-                                          Text="{Binding ElementName=map, Path=Altitude}" />
+                                              Width="200"
+                                              Text="{Binding ElementName=map, Path=Altitude}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Roll: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceTextBox Name="txtRoll"
-                                          Width="200"
-                                          Text="{Binding ElementName=map, Path=Roll}" />
+                                              Width="200"
+                                              Text="{Binding ElementName=map, Path=Roll}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Pitch: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceTextBox Name="txtPitch"
-                                          Width="200"
-                                          Text="{Binding ElementName=map, Path=Pitch}" />
+                                              Width="200"
+                                              Text="{Binding ElementName=map, Path=Pitch}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Yaw: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceTextBox Name="txtYaw"
-                                          Width="200"
-                                          Text="{Binding ElementName=map, Path=Yaw}" />
+                                              Width="200"
+                                              Text="{Binding ElementName=map, Path=Yaw}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show 3D Cursor: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxCursor"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=Show3DCursor}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=Show3DCursor}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show Buildings: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxBuildings"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=ShowBuildings}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=ShowBuildings}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Show Building Textures: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxBuildingTextures"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding ElementName=map, Path=ShowBuildingTextures}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=ShowBuildingTextures}" />
                         </StackPanel>
-                        
+
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Style: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceTextBox Name="txtStyle"
-                                          Width="200"
-                                          Text="{Binding ElementName=map, Path=MapStyle}" />
+                                              Width="200"
+                                              Text="{Binding ElementName=map, Path=MapStyle}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"
-                                Margin="10"
-                                HorizontalAlignment="Center">
+                                    Margin="10"
+                                    HorizontalAlignment="Center">
                             <s:SurfaceButton Name="btnStyleRoad"
-                                         Click="btnStyleRoad_Click">Road</s:SurfaceButton>
+                                             Click="btnStyleRoad_Click">Road</s:SurfaceButton>
                             <s:SurfaceButton Name="btnStyleHybrid"
-                                         Margin="10,0,10,0"
-                                         Click="btnStyleHybrid_Click">Hybrid</s:SurfaceButton>
+                                             Margin="10,0,10,0"
+                                             Click="btnStyleHybrid_Click">Hybrid</s:SurfaceButton>
                             <s:SurfaceButton Name="btnStyleAerial"
-                                         Click="btnStyleAerial_Click">Aerial</s:SurfaceButton>
+                                             Click="btnStyleAerial_Click">Aerial</s:SurfaceButton>
                         </StackPanel>
                         <s:SurfaceButton HorizontalAlignment="Center"
-                                     Margin="10"
-                                     Name="btnUp"
-                                     Content="Up"
-                                     Click="btnUp_Click" />
+                                         Margin="10"
+                                         Name="btnUp"
+                                         Content="Up"
+                                         Click="btnUp_Click" />
                         <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Margin="0">
+                                    HorizontalAlignment="Center"
+                                    Margin="0">
 
                             <s:SurfaceButton HorizontalAlignment="Center"
-                                         Margin="10"
-                                         Name="btnLeft"
-                                         Content="Left"
-                                         Click="btnLeft_Click" />
+                                             Margin="10"
+                                             Name="btnLeft"
+                                             Content="Left"
+                                             Click="btnLeft_Click" />
 
                             <s:SurfaceButton HorizontalAlignment="Center"
-                                         Margin="10"
-                                         Name="btnDown"
-                                         Content="Down"
-                                         Click="btnDown_Click" />
+                                             Margin="10"
+                                             Name="btnDown"
+                                             Content="Down"
+                                             Click="btnDown_Click" />
 
                             <s:SurfaceButton HorizontalAlignment="Center"
-                                         Margin="10"
-                                         Name="btnRight"
-                                         Content="Right"
-                                         Click="btnRight_Click" />
+                                             Margin="10"
+                                             Name="btnRight"
+                                             Content="Right"
+                                             Click="btnRight_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center">
+                                    HorizontalAlignment="Center">
                             <s:SurfaceButton HorizontalAlignment="Center"
-                                         Margin="10"
-                                         Name="btnZoomIn"
-                                         Content="Zoom In"
-                                         Click="btnZoomIn_Click" />
+                                             Margin="10"
+                                             Name="btnZoomIn"
+                                             Content="Zoom In"
+                                             Click="btnZoomIn_Click" />
 
                             <s:SurfaceButton HorizontalAlignment="Center"
-                                         Margin="10"
-                                         Name="btnZoomOut"
-                                         Content="Zoom Out"
-                                         Click="btnZoomOut_Click" />
+                                             Margin="10"
+                                             Name="btnZoomOut"
+                                             Content="Zoom Out"
+                                             Click="btnZoomOut_Click" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="Pan Sensitivity:" />
                             <s:SurfaceSlider Minimum="0"
-                                         Maximum="10"
-                                         SmallChange=".5"
-                                         Width="200"
-                                         Value="{Binding ElementName=map, Path=PanSensitivity}" />
+                                             Maximum="10"
+                                             SmallChange=".5"
+                                             Width="200"
+                                             Value="{Binding ElementName=map, Path=PanSensitivity}" />
                             <s:SurfaceTextBox Text="{Binding ElementName=map, Path=PanSensitivity}" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="Zoom Sensitivity:" />
                             <s:SurfaceSlider Minimum="0"
-                                         Maximum="20"
-                                         SmallChange=".5"
-                                         Width="200"
-                                         Value="{Binding ElementName=map, Path=ZoomSensitivity}" />
+                                             Maximum="20"
+                                             SmallChange=".5"
+                                             Width="200"
+                                             Value="{Binding ElementName=map, Path=ZoomSensitivity}" />
                             <s:SurfaceTextBox Text="{Binding ElementName=map, Path=ZoomSensitivity}" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="Tilt Sensitivity:" />
-                            <s:SurfaceSlider Minimum="0" Maximum="1" SmallChange="0.02" Width="200" Value="{Binding ElementName=map, Path=TiltSensitivity}" />
+                            <s:SurfaceSlider Minimum="0"
+                                             Maximum="1"
+                                             SmallChange="0.02"
+                                             Width="200"
+                                             Value="{Binding ElementName=map, Path=TiltSensitivity}" />
                             <s:SurfaceTextBox Text="{Binding ElementName=map, Path=TiltSensitivity}" />
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,20,0,0">
                             <TextBlock Text="Map Manipulation Mode:"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,10,0" />
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
                             <TextBlock Text="{Binding ElementName=map, Path=MapManipulationMode}"
-                                   VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Toggle Tilt mode:"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,10,0" />
-                            <s:SurfaceToggleButton Name="btnTiltMode" 
-                                      VerticalAlignment="Center"
-                                      Click="btnTiltMode_Click"
-                                      Width="130"
-                                      Height="40"
-                                      Content="Toggle Tilt Mode"/>
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
+                            <s:SurfaceToggleButton Name="btnTiltMode"
+                                                   VerticalAlignment="Center"
+                                                   Click="btnTiltMode_Click"
+                                                   Width="130"
+                                                   Height="40"
+                                                   Content="Toggle Tilt Mode" />
                         </StackPanel>
-                        
-                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,20,0,0">
                             <TextBlock Text="Pan Enabled: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxPanEnabled"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=IsPanEnabled}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=IsPanEnabled}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Zoom Enabled: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxZoomEnabled"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=IsZoomEnabled}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=IsZoomEnabled}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Pivot Enabled: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxpivotEnabled"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=IsPivotEnabled}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=IsPivotEnabled}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Tilt Enabled: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxTiltEnabled"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=IsTiltEnabled}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=IsTiltEnabled}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Spin Enabled: "
-                                   Margin="0,0,10,0" />
+                                       Margin="0,0,10,0" />
                             <s:SurfaceCheckBox Name="cbxSpinEnabled"
-                                           VerticalAlignment="Center"
-                                           IsChecked="{Binding ElementName=map, Path=IsSpinEnabled}" />
+                                               VerticalAlignment="Center"
+                                               IsChecked="{Binding ElementName=map, Path=IsSpinEnabled}" />
                         </StackPanel>
 
-                        
+
                     </StackPanel>
                 </s:SurfaceScrollViewer>
             </Border>

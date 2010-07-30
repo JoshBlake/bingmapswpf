@@ -8,6 +8,7 @@ using InfoStrat.VE;
 
 namespace InfoStrat.VE.NUI
 {
+    [Obsolete("SurfaveVEPushPinClickedEventArgs is now obsolete. Use regular VEPushPinClickedEventArgs.")]
     public class SurfaceVEPushPinClickedEventArgs : VEPushPinClickedEventArgs
     {
         private ContactEventArgs contactEventArgs;
@@ -32,6 +33,7 @@ namespace InfoStrat.VE.NUI
         public SurfaceVEPushPinClickedEventArgs(ContactEventArgs contactEventArgs)
         {
             this.contactEventArgs = contactEventArgs;
+            this.RoutedEvent = contactEventArgs.RoutedEvent;
         }
     }
 }

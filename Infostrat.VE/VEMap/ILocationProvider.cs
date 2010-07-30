@@ -9,5 +9,6 @@ namespace InfoStrat.VE
     public interface ILocationProvider
     {
         Point? UpdatePosition(VEMap map);
+        int GetZIndex();
     }
 }

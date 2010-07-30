@@ -32,6 +32,7 @@
         <ve:VEMap Name="map"
                   LatLong="38.9444195081574,-77.0630161230201"
                   Altitude="2000" 
+                  
                   ItemsSource="{Binding Locations}"
                   ItemTemplateSelector="{StaticResource templateSelector}">
         </ve:VEMap>

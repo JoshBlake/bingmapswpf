@@ -39,7 +39,9 @@ namespace InfoStrat.VE
             if (this.IsDisposed)
                 return;
 
-            Host.RenderEngine.ManuallyUninitializeRender();
+            if (Host != null &&
+                Host.RenderEngine != null)
+                Host.RenderEngine.ManuallyUninitializeRender();
 
             base.Dispose(disposing);
         }

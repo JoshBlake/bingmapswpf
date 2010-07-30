@@ -44,7 +44,7 @@ namespace InfoStrat.VE
 
         #endregion
 
-        #region Internal Methods
+        #region Internal Methodsi
 
         internal void UpdatePosition(VEMap map)
         {
@@ -66,10 +66,17 @@ namespace InfoStrat.VE
                     return;
                 }
             }
+
+            Canvas.SetZIndex(this, provider.GetZIndex());
+            
             Point? position = provider.UpdatePosition(map);
 
             if (!position.HasValue)
+            {
+                Canvas.SetLeft(this, -10000);
+                Canvas.SetTop(this, -10000);
                 return;
+            }
 
             Canvas.SetLeft(this, position.Value.X);
             Canvas.SetTop(this, position.Value.Y);

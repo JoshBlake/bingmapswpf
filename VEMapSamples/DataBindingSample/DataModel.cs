@@ -110,8 +110,23 @@ namespace DataBindingSample
             UpdateVisibility();
         }
 
+        public void ResetData()
+        {
+            ObservableCollection<LocationModel> newLocations = new ObservableCollection<LocationModel>();
+
+            foreach (LocationModel lm in Locations)
+            {
+                newLocations.Add(lm);
+            }
+            _locations = newLocations;
+            NotifyPropertyChanged("Locations");
+
+            return;
+        }
+
         public void InitData()
         {
+            
             ObservableCollection<LocationModel> newLocations = new ObservableCollection<LocationModel>();
 
             double centerLat = 38.9444195081574;

@@ -247,11 +247,17 @@ namespace InfoStrat.VE.WPFTouch
             ManipulationInertiaStarting += WPFTouchVEMap_ManipulationInertiaStarting;
             ManipulationDelta += WPFTouchVEMap_ManipulationDelta;
             ManipulationStarting += WPFTouchVEMap_ManipulationStarting;
+            ManipulationCompleted += WPFTouchVEMap_ManipulationCompleted;
+        }
+
+        void WPFTouchVEMap_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
+        {
+            e.Handled = true;
         }
 
         void WPFTouchVEMap_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
         {
-            //throw new NotImplementedException();
+            e.Handled = true;
         }
 
         void WPFTouchVEMap_ManipulationInertiaStarting(object sender, ManipulationInertiaStartingEventArgs e)
@@ -276,6 +282,9 @@ namespace InfoStrat.VE.WPFTouch
                 InitialVelocity = e.InitialVelocities.AngularVelocity,
                 DesiredDeceleration = 0.0002
             };
+
+            e.Handled = true;
+
         }
 
         void WPFTouchVEMap_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
@@ -311,6 +320,7 @@ namespace InfoStrat.VE.WPFTouch
             {
                 DoMapPivot(e.DeltaManipulation.Rotation, e.ManipulationOrigin);
             }
+            e.Handled = true;
         }
 
         private void TargetImage_PreviewTouchDown(object sender, TouchEventArgs e)

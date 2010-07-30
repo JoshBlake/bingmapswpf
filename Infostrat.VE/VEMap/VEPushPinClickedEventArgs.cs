@@ -42,9 +42,10 @@ namespace InfoStrat.VE
             this.eventArgs = null;
         }
 
-        public VEPushPinClickedEventArgs(EventArgs eventArgs)
+        public VEPushPinClickedEventArgs(RoutedEventArgs eventArgs)
         {
             this.eventArgs = eventArgs;
+            this.RoutedEvent = eventArgs.RoutedEvent;
         }
     }
 }

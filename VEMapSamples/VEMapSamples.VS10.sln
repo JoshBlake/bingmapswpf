@@ -23,6 +23,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfoStrat.VE.WPFTouch.VS10"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFTouchVEMapSample.VS10", "WPFTouchVEMapSample\WPFTouchVEMapSample.VS10.csproj", "{32093B65-B30A-4CE7-9022-CF6234245E92}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VEMapSamples", "VEMapSamples", "{668F87CB-C021-4E70-9708-FD235105282D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bin", "bin", "{057DCE1E-06C4-414C-A269-D98EFA97ACB6}"
+	ProjectSection(SolutionItems) = preProject
+		..\bin\InfoStrat.VE.dll = ..\bin\InfoStrat.VE.dll
+		..\bin\InfoStrat.VE.NUI.dll = ..\bin\InfoStrat.VE.NUI.dll
+		..\bin\InfoStrat.VE.Windows7Touch.dll = ..\bin\InfoStrat.VE.Windows7Touch.dll
+		..\bin\InfoStrat.VE.WPFTouch.dll = ..\bin\InfoStrat.VE.WPFTouch.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 12
@@ -36,12 +46,15 @@ Global
 		SccProjectName2 = ../InfoStrat.VE
 		SccLocalPath2 = ..\\InfoStrat.VE
 		SccProjectUniqueName3 = WPFMapSample\\WPFVEMapSample.VS10.csproj
+		SccProjectTopLevelParentUniqueName3 = VEMapSamples.VS10.sln
 		SccProjectName3 = WPFMapSample
 		SccLocalPath3 = WPFMapSample
 		SccProjectUniqueName4 = SurfaceMapSample\\SurfaceVEMapSample.VS10.csproj
+		SccProjectTopLevelParentUniqueName4 = VEMapSamples.VS10.sln
 		SccProjectName4 = SurfaceMapSample
 		SccLocalPath4 = SurfaceMapSample
 		SccProjectUniqueName5 = Windows7VEMapSample\\Windows7VEMapSample.VS10.csproj
+		SccProjectTopLevelParentUniqueName5 = VEMapSamples.VS10.sln
 		SccProjectName5 = Windows7VEMapSample
 		SccLocalPath5 = Windows7VEMapSample
 		SccProjectUniqueName6 = ..\\Windows7.Multitouch\\Windows7.Multitouch.VS10.csproj
@@ -54,12 +67,14 @@ Global
 		SccProjectName8 = ../Windows7.Multitouch.WPF
 		SccLocalPath8 = ..\\Windows7.Multitouch.WPF
 		SccProjectUniqueName9 = DataBindingSample\\DataBindingSample.VS10.csproj
+		SccProjectTopLevelParentUniqueName9 = VEMapSamples.VS10.sln
 		SccProjectName9 = DataBindingSample
 		SccLocalPath9 = DataBindingSample
 		SccProjectUniqueName10 = ..\\InfoStrat.VE.WPFTouch\\InfoStrat.VE.WPFTouch.VS10.csproj
 		SccProjectName10 = ../InfoStrat.VE.WPFTouch
 		SccLocalPath10 = ..\\InfoStrat.VE.WPFTouch
 		SccProjectUniqueName11 = WPFTouchVEMapSample\\WPFTouchVEMapSample.VS10.csproj
+		SccProjectTopLevelParentUniqueName11 = VEMapSamples.VS10.sln
 		SccProjectName11 = WPFTouchVEMapSample
 		SccLocalPath11 = WPFTouchVEMapSample
 	EndGlobalSection
@@ -96,9 +111,11 @@ Global
 		{C2772804-EA24-4643-B996-448070BEB69B}.Release No Tests|x86.ActiveCfg = Release|x86
 		{C2772804-EA24-4643-B996-448070BEB69B}.Release No Tests|x86.Build.0 = Release|x86
 		{C2772804-EA24-4643-B996-448070BEB69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2772804-EA24-4643-B996-448070BEB69B}.Release|x86.ActiveCfg = Release|x86
-		{C2772804-EA24-4643-B996-448070BEB69B}.Release|x86.Build.0 = Release|x86
+		{C2772804-EA24-4643-B996-448070BEB69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2772804-EA24-4643-B996-448070BEB69B}.Release|x86.ActiveCfg = Release|Any CPU
+		{C2772804-EA24-4643-B996-448070BEB69B}.Release|x86.Build.0 = Release|Any CPU
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug Minimal|Any CPU.ActiveCfg = Debug on Surface|x86
+		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug Minimal|Any CPU.Build.0 = Debug on Surface|x86
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug Minimal|x86.ActiveCfg = Debug on Surface|x86
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug Minimal|x86.Build.0 = Debug on Surface|x86
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Debug No Tests|Any CPU.ActiveCfg = Debug on Surface|x86
@@ -117,9 +134,10 @@ Global
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release No Tests|x86.Build.0 = Release|x86
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|x86.ActiveCfg = Release|x86
-		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|x86.Build.0 = Release|x86
+		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9B10AB5-EF32-4607-AA16-8D612718C1B6}.Release|x86.Build.0 = Release|Any CPU
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug Minimal|Any CPU.ActiveCfg = Debug on Surface|x86
+		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug Minimal|Any CPU.Build.0 = Debug on Surface|x86
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug Minimal|x86.ActiveCfg = Debug on Surface|x86
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug Minimal|x86.Build.0 = Debug on Surface|x86
 		{A6D30108-C610-4724-9CCD-F40D8835E35A}.Debug No Tests|Any CPU.ActiveCfg = Debug on Surface|x86
@@ -157,7 +175,8 @@ Global
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release No Tests|Any CPU.ActiveCfg = Release|x86
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release No Tests|x86.ActiveCfg = Release|x86
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release No Tests|x86.Build.0 = Release|x86
-		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release|Any CPU.ActiveCfg = Release|x86
+		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release|Any CPU.Build.0 = Release|x86
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release|x86.ActiveCfg = Release|x86
 		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55}.Release|x86.Build.0 = Release|x86
 		{EB0627BA-B854-455F-8472-2F6C38E88795}.Debug Minimal|Any CPU.ActiveCfg = Debug|x86
@@ -244,6 +263,7 @@ Global
 		{F42D6367-B340-4CE4-9AB7-43EEF3692FF4}.Release|x86.ActiveCfg = Release|x86
 		{F42D6367-B340-4CE4-9AB7-43EEF3692FF4}.Release|x86.Build.0 = Release|x86
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Debug Minimal|Any CPU.ActiveCfg = Debug|x86
+		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Debug Minimal|Any CPU.Build.0 = Debug|x86
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Debug Minimal|x86.ActiveCfg = Debug|x86
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Debug Minimal|x86.Build.0 = Debug|x86
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Debug No Tests|Any CPU.ActiveCfg = Debug|x86
@@ -261,9 +281,9 @@ Global
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Release No Tests|x86.Build.0 = Release|x86
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Release|x86.ActiveCfg = Release|x86
+		{BF147DD5-18F0-47AE-A0F0-624909DF38BD}.Release|x86.Build.0 = Release|x86
 		{5C2B912D-0D19-4D3C-8967-5123D5725E5C}.Debug Minimal|Any CPU.ActiveCfg = Debug Minimal|Any CPU
-		{5C2B912D-0D19-4D3C-8967-5123D5725E5C}.Debug Minimal|Any CPU.Build.0 = Debug Minimal|Any CPU
 		{5C2B912D-0D19-4D3C-8967-5123D5725E5C}.Debug Minimal|x86.ActiveCfg = Debug Minimal|x86
 		{5C2B912D-0D19-4D3C-8967-5123D5725E5C}.Debug Minimal|x86.Build.0 = Debug Minimal|x86
 		{5C2B912D-0D19-4D3C-8967-5123D5725E5C}.Debug No Tests|Any CPU.ActiveCfg = Debug No Tests|Any CPU
@@ -308,5 +328,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{30AE0834-A47D-40EE-8553-3EF0C1CA1B55} = {668F87CB-C021-4E70-9708-FD235105282D}
+		{EB0627BA-B854-455F-8472-2F6C38E88795} = {668F87CB-C021-4E70-9708-FD235105282D}
+		{BF147DD5-18F0-47AE-A0F0-624909DF38BD} = {668F87CB-C021-4E70-9708-FD235105282D}
+		{32093B65-B30A-4CE7-9022-CF6234245E92} = {668F87CB-C021-4E70-9708-FD235105282D}
+		{A6D30108-C610-4724-9CCD-F40D8835E35A} = {668F87CB-C021-4E70-9708-FD235105282D}
 	EndGlobalSection
 EndGlobal

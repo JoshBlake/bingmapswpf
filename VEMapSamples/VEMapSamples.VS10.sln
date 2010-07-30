@@ -24,6 +24,45 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFTouchVEMapSample.VS10", "WPFTouchVEMapSample\WPFTouchVEMapSample.VS10.csproj", "{32093B65-B30A-4CE7-9022-CF6234245E92}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 12
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ..\\InfoStrat.VE.NUI\\InfoStrat.VE.NUI.VS10.csproj
+		SccProjectName1 = ../InfoStrat.VE.NUI
+		SccLocalPath1 = ..\\InfoStrat.VE.NUI
+		SccProjectUniqueName2 = ..\\InfoStrat.VE\\InfoStrat.VE.VS10.csproj
+		SccProjectName2 = ../InfoStrat.VE
+		SccLocalPath2 = ..\\InfoStrat.VE
+		SccProjectUniqueName3 = WPFMapSample\\WPFVEMapSample.VS10.csproj
+		SccProjectName3 = WPFMapSample
+		SccLocalPath3 = WPFMapSample
+		SccProjectUniqueName4 = SurfaceMapSample\\SurfaceVEMapSample.VS10.csproj
+		SccProjectName4 = SurfaceMapSample
+		SccLocalPath4 = SurfaceMapSample
+		SccProjectUniqueName5 = Windows7VEMapSample\\Windows7VEMapSample.VS10.csproj
+		SccProjectName5 = Windows7VEMapSample
+		SccLocalPath5 = Windows7VEMapSample
+		SccProjectUniqueName6 = ..\\Windows7.Multitouch\\Windows7.Multitouch.VS10.csproj
+		SccProjectName6 = ../Windows7.Multitouch
+		SccLocalPath6 = ..\\Windows7.Multitouch
+		SccProjectUniqueName7 = ..\\InfoStrat.VE.Windows7Touch\\InfoStrat.VE.Windows7Touch.VS10.csproj
+		SccProjectName7 = ../InfoStrat.VE.Windows7Touch
+		SccLocalPath7 = ..\\InfoStrat.VE.Windows7Touch
+		SccProjectUniqueName8 = ..\\Windows7.Multitouch.WPF\\Windows7.Multitouch.WPF.VS10.csproj
+		SccProjectName8 = ../Windows7.Multitouch.WPF
+		SccLocalPath8 = ..\\Windows7.Multitouch.WPF
+		SccProjectUniqueName9 = DataBindingSample\\DataBindingSample.VS10.csproj
+		SccProjectName9 = DataBindingSample
+		SccLocalPath9 = DataBindingSample
+		SccProjectUniqueName10 = ..\\InfoStrat.VE.WPFTouch\\InfoStrat.VE.WPFTouch.VS10.csproj
+		SccProjectName10 = ../InfoStrat.VE.WPFTouch
+		SccLocalPath10 = ..\\InfoStrat.VE.WPFTouch
+		SccProjectUniqueName11 = WPFTouchVEMapSample\\WPFTouchVEMapSample.VS10.csproj
+		SccProjectName11 = WPFTouchVEMapSample
+		SccLocalPath11 = WPFTouchVEMapSample
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Minimal|Any CPU = Debug Minimal|Any CPU
 		Debug Minimal|x86 = Debug Minimal|x86

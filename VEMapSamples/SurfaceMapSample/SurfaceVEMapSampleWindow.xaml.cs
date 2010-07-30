@@ -169,7 +169,7 @@ namespace SurfaceVEMapSample
             map.DoMapZoom(-50);
         }
         
-        private void SurfacePushPin_Click(object sender, SurfaceVEPushPinClickedEventArgs e)
+        private void SurfacePushPin_Click(object sender, VEPushPinClickedEventArgs e)
         {
             VEPushPin pin = sender as VEPushPin;
             
@@ -191,5 +191,10 @@ namespace SurfaceVEMapSample
             }
         }
         #endregion
+
+        private void SurfaceButton_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

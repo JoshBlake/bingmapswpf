@@ -23,12 +23,12 @@ namespace InfoStrat.VE
 
     public class VEPushPin : VEShape
     {
-        #region Members
+        #region Fields
 
-        private Button Button;
-        private VEPushPin parentPushPin;
+        protected Button Button;
+        protected VEPushPin parentPushPin;
 
-        private VEPushPinState currentState;
+        protected VEPushPinState currentState;
 
         double previousCameraAltitude;
 
@@ -40,6 +40,8 @@ namespace InfoStrat.VE
             TransitionIntoUpperRange,
             TransitionIntoLowerRange
         };
+
+        bool isNewPin = true;
 
         #endregion
 
@@ -83,10 +85,17 @@ namespace InfoStrat.VE
             if (e.OldValue != null)
                 pin.DisplayLatitude = (double)e.OldValue;
 
-            AnimateUtility.AnimateElementDouble(pin,
-                                                VEPushPin.DisplayLatitudeProperty,
-                                                (double)e.NewValue,
-                                                0, 2);
+            if (pin.isNewPin)
+            {
+                pin.DisplayLatitude = (double)e.NewValue;
+            }
+            else
+            {
+                AnimateUtility.AnimateElementDouble(pin,
+                                                    VEPushPin.DisplayLatitudeProperty,
+                                                    (double)e.NewValue,
+                                                    0, 2);
+            }
         }
 
         #endregion
@@ -122,10 +131,17 @@ namespace InfoStrat.VE
             if (e.OldValue != null)
                 pin.DisplayLongitude = (double)e.OldValue;
 
-            AnimateUtility.AnimateElementDouble(pin,
-                                                VEPushPin.DisplayLongitudeProperty,
-                                                (double)e.NewValue,
-                                                0, 2);
+            if (pin.isNewPin)
+            {
+                pin.DisplayLongitude = (double)e.NewValue;
+            }
+            else
+            {
+                AnimateUtility.AnimateElementDouble(pin,
+                                                    VEPushPin.DisplayLongitudeProperty,
+                                                    (double)e.NewValue,
+                                                    0, 2);
+            }
         }
 
         #endregion
@@ -332,10 +348,18 @@ namespace InfoStrat.VE
 
         public VEPushPin(VELatLong latLong)
         {
-            this.Latitude = latLong.Latitude;
-            this.Longitude = latLong.Longitude;
-            this.Altitude = latLong.Altitude;
-            this.AltMode = latLong.AltMode;
+            if (latLong != null)
+            {
+                this.Latitude = latLong.Latitude;
+                this.Longitude = latLong.Longitude;
+
+                this.DisplayLatitude = this.Latitude;
+                this.DisplayLongitude = this.Longitude;
+
+                this.Altitude = latLong.Altitude;
+                this.AltMode = latLong.AltMode;
+            }
+
             Initialize();
         }
 
@@ -346,6 +370,9 @@ namespace InfoStrat.VE
             this.Longitude = latLong.Longitude;
             this.Altitude = latLong.Altitude;
             this.AltMode = latLong.AltMode;
+
+            this.DisplayLatitude = this.Latitude;
+            this.DisplayLongitude = this.Longitude;
 
             this.MinAltitude = minAltitude;
             this.MaxAltitude = maxAltitude;
@@ -387,6 +414,7 @@ namespace InfoStrat.VE
             if (this.Map != map)
             {
                 map.AddRegisteredPosition(this, DisplayLatLong);
+                isNewPin = false;
             }
 
             base.UpdatePosition(map);
@@ -495,6 +523,13 @@ namespace InfoStrat.VE
                 return null;
             }
 
+            if (!this.IsMeasureValid)
+            {
+                this.Opacity = 0;
+                this.currentState = VEPushPinState.Hidden;
+                return null;
+            }
+            
             Point anchorOffset = GetAnchorOffset();
 
             double displayLeft = anchorPosition.Value.X - anchorOffset.X;
@@ -566,8 +601,12 @@ namespace InfoStrat.VE
 
         #region Private Methods
 
-        void Button_Click(object sender, RoutedEventArgs e)
+        protected void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (Map != null)
+            {
+                Map.SendToFront(this);
+            }
             if (Click != null)
             {
                 VEPushPinClickedEventArgs args = new VEPushPinClickedEventArgs(e);

@@ -11,9 +11,11 @@ namespace InfoStrat.VE.Utilities
     {
         public static DependencyObject GetAncestorByType(DependencyObject element, Type type)
         {
-            if (element == null) return null;
+            if (element == null) 
+                return null;
 
-            if (element is VEShape) return element;
+            if (type.IsAssignableFrom(element.GetType())) 
+                return element;
 
             return GetAncestorByType(VisualTreeHelper.GetParent(element), type);
         }

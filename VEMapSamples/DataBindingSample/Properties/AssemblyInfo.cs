@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DataBindingSample")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("InfoStrat.VE: Bing Maps 3D control for WPF, Surface, and Windows 7 Touch")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("DataBindingSample")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
+[assembly: AssemblyCompany("Information Strategies, Inc.")]
+[assembly: AssemblyProduct("InfoStrat.VE")]
+[assembly: AssemblyCopyright("Copyright © 2009-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

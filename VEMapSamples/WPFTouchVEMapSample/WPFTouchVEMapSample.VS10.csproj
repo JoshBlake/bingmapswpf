@@ -151,11 +151,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\InfoStrat.VE.WPFTouch\InfoStrat.VE.WPFTouch.VS10.csproj">
       <Project>{5C2B912D-0D19-4D3C-8967-5123D5725E5C}</Project>
-      <Name>InfoStrat.VE.WPFTouch</Name>
+      <Name>InfoStrat.VE.WPFTouch.VS10</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\InfoStrat.VE\InfoStrat.VE.csproj">
+    <ProjectReference Include="..\..\InfoStrat.VE\InfoStrat.VE.VS10.csproj">
       <Project>{D9B10AB5-EF32-4607-AA16-8D612718C1B6}</Project>
-      <Name>InfoStrat.VE</Name>
+      <Name>InfoStrat.VE.VS10</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

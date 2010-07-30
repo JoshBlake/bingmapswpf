@@ -354,9 +354,11 @@ namespace InfoStrat.VE
                 if (globeControl != null)
                 {
                     globeControl.Dispose();
+                    globeControl = null;
                 }
             }
             disposed = true;
+            _isMapLoaded = false;
         }
 
         #endregion
@@ -560,6 +562,8 @@ namespace InfoStrat.VE
         /// <param name="center">Pointer position</param>
         public virtual void DoMapMove(double dx, double dy, Point center)
         {
+            if (this.IsMapLoaded == false)
+                return;
             CancelFlyTo();
 
             CameraStep cameraStep = null;
@@ -965,6 +969,8 @@ namespace InfoStrat.VE
                 //Are we in Visual Studio Designer?
                 if (!DesignerProperties.GetIsInDesignMode(this))
                 {
+                    if (this.globeControl.Host.RenderEngine == null)
+                        return;
                     this.globeControl.Host.RenderEngine.Initialized += new EventHandler(RenderEngine_Initialized);
 
                     this.globeControl.InitRenderEngine();
@@ -1075,6 +1081,62 @@ namespace InfoStrat.VE
 
         #region Public Shape Management Methods
 
+        public void SendToFront(VEShape shape)
+        {
+            int maxZIndex = int.MinValue;
+
+            foreach (object item in Items)
+            {
+                VEMapItem container = ItemContainerGenerator.ContainerFromItem(item) as VEMapItem;
+
+                if (container != null)
+                {
+                    VEShape shapeItem = VisualUtility.GetChildByType(container, typeof(VEShape)) as VEShape;
+                    if (shapeItem != null)
+                    {
+                        if (shapeItem.ZIndex > maxZIndex)
+                            maxZIndex = shapeItem.ZIndex;
+                        shapeItem.ZIndex--;
+                    }
+                }
+            }
+            if (maxZIndex == int.MinValue)
+                maxZIndex = 1;
+
+            shape.ZIndex = maxZIndex + 1;
+        }
+        
+        public void SendToBack(VEShape shape)
+        {
+            int minZIndex = int.MaxValue;
+
+            foreach (object item in Items)
+            {
+                VEMapItem container = ItemContainerGenerator.ContainerFromItem(item) as VEMapItem;
+
+                if (container != null)
+                {
+                    VEShape shapeItem = VisualUtility.GetChildByType(container, typeof(VEShape)) as VEShape;
+                    if (shapeItem != null)
+                    {
+                        if (shapeItem.ZIndex < minZIndex)
+                            minZIndex = shapeItem.ZIndex;
+                        shapeItem.ZIndex++;
+                    }
+                }
+            }
+
+            if (minZIndex == int.MaxValue)
+                minZIndex = -1;
+
+            shape.ZIndex = minZIndex - 1;
+        }
+
+        public void SetItemsPositionDirty()
+        {
+            isItemsPositionDirty = true;
+        }
+
         public void AddShape(VEShape shape, string layerId)
         {
             if (shape.ShapeType == VEShapeType.Polyline)
@@ -1145,7 +1207,6 @@ namespace InfoStrat.VE
 
         public bool IsBehindPlanet(VELatLong latLong)
         {
-            return false;
             VELatLong cameraLatLong = GetCameraPosition();
 
             double distance = VELatLong.GreatCircleDistance(cameraLatLong, latLong);
@@ -1199,6 +1260,52 @@ namespace InfoStrat.VE
             }
         }
 
+        /// <summary>
+        /// Use with LatLongToPoint if you are setting the Canvas.Left or Canvas.Top for placement within the map
+        /// </summary>
+        /// <param name="point">Control-relative point</param>
+        /// <returns>Inner canvas-relative point</returns>
+        public Point? OuterPointToInnerPoint(Point? point)
+        {
+            if (point == null)
+                return null;
+
+            double x = (int)MathHelper.MapValue(point.Value.X,
+                                         0,
+                                         this.ActualWidth,
+                                         0,
+                                         this.targetImage.ActualWidth);
+            double y = (int)MathHelper.MapValue(point.Value.Y,
+                                     0,
+                                     this.ActualHeight,
+                                     0,
+                                     this.targetImage.ActualHeight);
+            return new Point(x, y);
+        }
+
+        /// <summary>
+        /// Use with PointToLatLong if you need to convert the inner Canvas position to an control-relative point
+        /// </summary>
+        /// <param name="point">Inner canvas-relative point</param>
+        /// <returns>Control-relative point</returns>
+        public Point? InnerPointToOuterPoint(Point? point)
+        {
+            if (point == null)
+                return null;
+
+            double x = (int)MathHelper.MapValue(point.Value.X,
+                                         0,
+                                         this.targetImage.ActualWidth,
+                                         0,
+                                         this.ActualWidth);
+            double y = (int)MathHelper.MapValue(point.Value.Y,
+                                     0,
+                                     this.targetImage.ActualHeight,
+                                     0,
+                                     this.ActualHeight);
+            return new Point(x, y);
+        }
+
         public Point? LatLongToPoint(VELatLong latLong)
         {
             return LatLongToPoint(latLong, null);
@@ -1206,12 +1313,9 @@ namespace InfoStrat.VE
 
         public Point? LatLongToPoint(VELatLong latLong, object key)
         {
-            Random r = new Random();
-            Point dummy = new Point(r.Next(100, 700), r.Next(100, 700));
-            //return dummy;
-
             if (this.globeControl == null ||
-                this.globeControl.PositionStep == null)
+                this.globeControl.PositionStep == null ||
+                latLong == null)
             {
                 return null;
             }
@@ -1241,7 +1345,10 @@ namespace InfoStrat.VE
                     newLLA.Altitude += surfaceElevation;
                     rp.Vector = newLLA.GetVector();
                 }
+                if (!rp.Valid)
+                    return null;
                 position = this.globeControl.PositionStep.VectorToScreenPosition(rp.Vector);
+
 
             }
             else
@@ -1261,12 +1368,12 @@ namespace InfoStrat.VE
                                          0,
                                          globeControl.Width,
                                          0,
-                                         this.targetImage.ActualWidth); //ActualWidth
+                                         this.targetImage.ActualWidth);
                 double y = (int)MathHelper.MapValue(position.Value.Y,
                                          0,
                                          globeControl.Height,
                                          0,
-                                         this.targetImage.ActualHeight); //ActualHeight
+                                         this.targetImage.ActualHeight);
                 return new Point(x, y);
             }
 
@@ -1287,12 +1394,12 @@ namespace InfoStrat.VE
 
             double x = (int)MathHelper.MapValue(point.Value.X,
                                          0,
-                                         this.targetImage.ActualWidth,
+                                         this.ActualWidth,
                                          0,
                                          globeControl.Width);
             double y = (int)MathHelper.MapValue(point.Value.Y,
                                      0,
-                                     this.targetImage.ActualHeight,
+                                     this.ActualHeight,
                                      0,
                                      globeControl.Height);
 
@@ -1731,6 +1838,9 @@ namespace InfoStrat.VE
 
         void CompositionTarget_Rendering(object sender, EventArgs e)
         {
+            if (!IsMapLoaded)
+                return;
+
             if (isMapPositionDirty)
             {
                 UpdateMapFromDP();

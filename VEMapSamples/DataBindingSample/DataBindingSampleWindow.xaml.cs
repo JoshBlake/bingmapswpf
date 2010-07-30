@@ -33,7 +33,7 @@ namespace DataBindingSample
 
         private void btnResetData_Click(object sender, RoutedEventArgs e)
         {
-            dataModel.InitData();
+            dataModel.ResetData();
         }
 
     }

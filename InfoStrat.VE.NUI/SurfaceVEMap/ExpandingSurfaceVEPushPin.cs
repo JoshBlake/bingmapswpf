@@ -191,8 +191,7 @@ namespace InfoStrat.VE.NUI
         void currentTimeInvalidated(object sender, EventArgs e)
         {
             if (Map != null)
-                Map.SetItemsPositionDirty();
-            this.UpdatePosition();
+                Map.ForceUpdateItemPosition(this);            
         }
 
         void growClock_Completed(object sender, EventArgs e)

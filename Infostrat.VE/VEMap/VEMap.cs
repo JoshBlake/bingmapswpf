@@ -1137,6 +1137,19 @@ namespace InfoStrat.VE
             isItemsPositionDirty = true;
         }
 
+        public void ForceUpdateItemPosition(VEShape item)
+        {            
+            if (!_isMapLoaded)
+                return;
+                       
+            VEMapItem container = ItemContainerGenerator.ContainerFromItem(item) as VEMapItem;
+
+            if (container != null)
+            {
+                container.UpdatePosition(this);
+            }
+        }
+
         public void AddShape(VEShape shape, string layerId)
         {
             if (shape.ShapeType == VEShapeType.Polyline)

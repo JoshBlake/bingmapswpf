@@ -1144,6 +1144,11 @@ namespace InfoStrat.VE
                        
             VEMapItem container = ItemContainerGenerator.ContainerFromItem(item) as VEMapItem;
 
+            if (container == null)
+            {
+                container = ItemContainerGenerator.ContainerFromItem(item.DataContext) as VEMapItem;
+            }
+
             if (container != null)
             {
                 container.UpdatePosition(this);

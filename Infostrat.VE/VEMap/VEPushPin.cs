@@ -26,7 +26,6 @@ namespace InfoStrat.VE
         #region Fields
 
         protected Button Button;
-        protected VEPushPin parentPushPin;
 
         protected VEPushPinState currentState;
 
@@ -286,6 +285,53 @@ namespace InfoStrat.VE
 
         #endregion
 
+        #region ParentPushPin DP
+
+        public VEPushPin ParentPushPin
+        {
+            get { return (VEPushPin)GetValue(ParentPushPinProperty); }
+            set { SetValue(ParentPushPinProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PinVisible.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ParentPushPinProperty =
+            DependencyProperty.Register("ParentPushPin", typeof(VEPushPin), typeof(VEPushPin), new UIPropertyMetadata(null, new PropertyChangedCallback(OnParentPushPinPropertyChanged)));
+
+        private static void OnParentPushPinPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            VEPushPin pin = obj as VEPushPin;
+            if (pin == null)
+                return;
+
+            pin.UpdateParentItemFromParentPushPin();
+        }
+
+        #endregion
+
+        #region ParentItem DP
+
+        public object ParentItem
+        {
+            get { return (object)GetValue(ParentItemProperty); }
+            set { SetValue(ParentItemProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ParentItem.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ParentItemProperty =
+            DependencyProperty.Register("ParentItem", typeof(object), typeof(VEPushPin), new UIPropertyMetadata(null, new PropertyChangedCallback(OnParentItemPropertyChanged)));
+
+        private static void OnParentItemPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            VEPushPin pin = obj as VEPushPin;
+            if (pin == null)
+                return;
+
+            pin.UpdateParentPushPinFromParentItem();
+        }
+
+        #endregion
+
+
         #endregion
 
         #region Public Properties
@@ -306,18 +352,6 @@ namespace InfoStrat.VE
             }
         }
 
-        public VEPushPin ParentPushPin
-        {
-            get
-            {
-                return parentPushPin;
-            }
-            set
-            {
-                parentPushPin = value;
-            }
-        }
-
         public VEPushPinState CurrentState
         {
             get
@@ -329,7 +363,7 @@ namespace InfoStrat.VE
         #endregion
 
         #region Public Events
-
+        
         public event EventHandler<VEPushPinClickedEventArgs> Click;
 
         #endregion
@@ -444,11 +478,11 @@ namespace InfoStrat.VE
                     currentState = VEPushPinState.FadingIn;
 
                     //If transitioning and has a parent
-                    if (this.parentPushPin != null &&
+                    if (this.ParentPushPin != null &&
                         (altEvent == VEPushPinAltitudeEvent.TransitionIntoUpperRange))
                     {
-                        this.DisplayLatitude = this.parentPushPin.Latitude;
-                        this.DisplayLongitude = this.parentPushPin.Longitude;
+                        this.DisplayLatitude = this.ParentPushPin.Latitude;
+                        this.DisplayLongitude = this.ParentPushPin.Longitude;
                     }
 
                     if (this.DisplayLatitude != this.Latitude ||
@@ -489,17 +523,17 @@ namespace InfoStrat.VE
                     currentState = VEPushPinState.FadingOut;
 
                     //If transitioning and has a parent
-                    if (this.parentPushPin != null &&
+                    if (this.ParentPushPin != null &&
                         (altEvent == VEPushPinAltitudeEvent.TransitionAboveUpperRange))
                     {
                         AnimateUtility.AnimateElementDouble(this,
                                                             VEPushPin.DisplayLatitudeProperty,
-                                                            this.parentPushPin.Latitude,
+                                                            this.ParentPushPin.Latitude,
                                                             0,
                                                             1);
                         AnimateUtility.AnimateElementDouble(this,
                                                             VEPushPin.DisplayLongitudeProperty,
-                                                            this.parentPushPin.Longitude,
+                                                            this.ParentPushPin.Longitude,
                                                             0,
                                                             1);
 
@@ -529,7 +563,7 @@ namespace InfoStrat.VE
                 this.currentState = VEPushPinState.Hidden;
                 return null;
             }
-            
+
             Point anchorOffset = GetAnchorOffset();
 
             double displayLeft = anchorPosition.Value.X - anchorOffset.X;
@@ -560,7 +594,7 @@ namespace InfoStrat.VE
         {
             this.ShapeType = VEShapeType.Pushpin;
             this.Button = null;
-            this.parentPushPin = null;
+            this.ParentPushPin = null;
             this.previousCameraAltitude = 0;
 
             this.Visibility = Visibility.Collapsed;
@@ -601,28 +635,48 @@ namespace InfoStrat.VE
 
         #region Private Methods
 
+        private void UpdateParentItemFromParentPushPin()
+        {
+            if (this.Map == null)
+                return;
+
+            if (this.ParentPushPin == null)
+                this.ParentItem = null;
+
+            this.ParentItem = this.Map.ItemContainerGenerator.ItemFromContainer(ParentPushPin);
+        }
+
+        private void UpdateParentPushPinFromParentItem()
+        {
+            if (this.Map == null)
+                return;
+
+            if (this.ParentItem == null)
+                this.ParentPushPin = null;
+
+            this.ParentPushPin = this.Map.ItemContainerGenerator.ContainerFromItem(this.ParentItem) as VEPushPin;
+        }
         protected void Button_Click(object sender, RoutedEventArgs e)
         {
             if (Map != null)
             {
                 Map.SendToFront(this);
             }
-            if (Click != null)
+
+            VEPushPinClickedEventArgs args = new VEPushPinClickedEventArgs(e);
+
+            Point? position = GetPosition(LatLong);
+            if (position != null)
             {
-                VEPushPinClickedEventArgs args = new VEPushPinClickedEventArgs(e);
-
-                Point? position = GetPosition(LatLong);
-                if (position != null)
-                {
-                    args.PushPinScreenPosition = this.Map.PointToScreen(new Point(position.Value.X, position.Value.Y));
-                }
-                else
-                {
-                    args.PushPinScreenPosition = new Point(0, 0);
-                }
-
-                OnClick(this, args);
+                args.PushPinScreenPosition = this.Map.PointToScreen(new Point(position.Value.X, position.Value.Y));
             }
+            else
+            {
+                args.PushPinScreenPosition = new Point(0, 0);
+            }
+
+            OnClick(this, args);
+
         }
 
         protected Point? GetPosition(VELatLong latLong)

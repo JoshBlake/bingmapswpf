@@ -238,6 +238,8 @@ namespace InfoStrat.VE
 
         #endregion
 
+      
+
         #region Visibility DP
 
         public new Visibility Visibility
@@ -331,9 +333,110 @@ namespace InfoStrat.VE
 
         #endregion
 
+        #region OriginalHeight DP
+
+        /// <summary>
+        /// Original rendered height of the pushpin
+        /// </summary>
+        public double OriginalHeight
+        {
+            get { return (double)GetValue(OriginalHeightProperty); }
+            set { SetValue(OriginalHeightProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for OriginalHeight.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty OriginalHeightProperty =
+            DependencyProperty.Register("OriginalHeight", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(0.0));
 
         #endregion
 
+        #region OriginalWidth DP
+
+        /// <summary>
+        /// Original rendered width of the pushpin
+        /// </summary>
+        public double OriginalWidth
+        {
+            get { return (double)GetValue(OriginalWidthProperty); }
+            set { SetValue(OriginalWidthProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for OriginalWidth.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty OriginalWidthProperty =
+            DependencyProperty.Register("OriginalWidthProperty", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(0.0));
+
+        #endregion
+
+        #region OriginalAltitude DP
+
+        /// <summary>
+        /// Original altitude above or below Earth, in meters
+        /// </summary>
+        public double OriginalAltitude
+        {
+            get { return (double)GetValue(OriginalAltitudeProperty); }
+            set { SetValue(OriginalAltitudeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Altitude.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty OriginalAltitudeProperty =
+            DependencyProperty.Register("OriginalAltitude", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(0.0));
+
+        #endregion
+
+        #region MaxOpacity DP
+
+        /// <summary>
+        /// Maximum opacity level for the pushpin
+        /// </summary>
+        public double MaxOpacity
+        {
+            get { return (double)GetValue(MaxOpacityProperty); }
+            set { SetValue(MaxOpacityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MaxOpacity.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MaxOpacityProperty =
+            DependencyProperty.Register("MaxOpacity", typeof(double), typeof(VEPushPin), new UIPropertyMetadata(1.0));
+
+        #endregion
+
+        #region IsCenteredOnMapPoint DP
+
+        /// <summary>
+        /// Determines whether the pushpin visual stays centered on it's defined map point
+        /// </summary>
+        public bool IsCenteredOnMapPoint
+        {
+            get { return (bool)GetValue(IsCenteredOnMapPointProperty); }
+            set { SetValue(IsCenteredOnMapPointProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCenteredOnMapPoint.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCenteredOnMapPointProperty =
+            DependencyProperty.Register("IsCenteredOnMapPoint", typeof(bool), typeof(VEPushPin), new UIPropertyMetadata(false));
+
+        #endregion
+
+        #region ScalesWithMap DP
+
+        /// <summary>
+        /// Determines whether a pushpin scales with the map zoom level or always stays same size
+        /// </summary>
+        public bool ScalesWithMap
+        {
+            get { return (bool)GetValue(ScalesWithMapProperty); }
+            set { SetValue(ScalesWithMapProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ScalesWithMap.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ScalesWithMapProperty =
+            DependencyProperty.Register("ScalesWithMap", typeof(bool), typeof(VEPushPin), new UIPropertyMetadata(false));
+
+        #endregion
+
+        #endregion
+        
         #region Public Properties
 
         public VELatLong LatLong
@@ -576,7 +679,8 @@ namespace InfoStrat.VE
         void showClock_Completed(object sender, EventArgs e)
         {
             currentState = VEPushPinState.Visible;
-            this.Opacity = 1.0;
+
+            this.Opacity = this.MaxOpacity;
         }
 
         void hideClock_Completed(object sender, EventArgs e)
@@ -628,7 +732,20 @@ namespace InfoStrat.VE
         /// <returns>A point relative to the control that represents the location of the current latitude and longitude</returns>
         protected virtual Point GetAnchorOffset()
         {
-            return new Point(this.ActualWidth / 2, this.ActualHeight);
+            Point point = new Point();
+
+            point.X = this.ActualWidth / 2;
+
+            if (IsCenteredOnMapPoint)
+            {
+                point.Y = this.ActualHeight / 2;
+            }
+            else
+            {
+                point.Y = this.ActualHeight;
+            }
+
+            return point;
         }
 
         #endregion
@@ -739,6 +856,19 @@ namespace InfoStrat.VE
                          previousCameraAltitude >= this.MinAltitude)
                 {
                     altEvent = VEPushPinAltitudeEvent.TransitionBelowLowerRange;
+                }
+
+                if (ScalesWithMap)
+                {
+                    if (newCameraAltitude != this.OriginalAltitude)
+                    {
+                        double scaleFactor = this.OriginalAltitude / newCameraAltitude;
+
+                        this.Height = this.OriginalHeight * scaleFactor;
+                        this.Width = this.OriginalWidth * scaleFactor;
+
+                        this.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    }
                 }
 
                 previousCameraAltitude = newCameraAltitude;

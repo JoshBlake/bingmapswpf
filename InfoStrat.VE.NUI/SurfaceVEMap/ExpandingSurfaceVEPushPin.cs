@@ -34,7 +34,7 @@ namespace InfoStrat.VE.NUI
         ContentPresenter cpContent;
         ContentPresenter cpDetails;
         Panel pnlContainer;
-        
+
         #endregion
 
         #region Details DP
@@ -62,7 +62,70 @@ namespace InfoStrat.VE.NUI
         }
 
         #endregion
+        
+        #region Events
 
+        #region Expanding Events
+
+        #region Expanding Event
+
+        public event EventHandler Expanding;
+
+        protected void SendOnExpanding()
+        {
+            if (Expanding == null)
+                return;
+
+            Expanding(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Expanded Event
+
+        public event EventHandler Expanded;
+
+        protected void SendOnExpanded()
+        {
+            if (Expanded == null)
+                return;
+
+            Expanded(this, EventArgs.Empty);
+        }
+        #endregion
+
+        #region Collapsing Event
+
+        public event EventHandler Collapsing;
+
+        protected void SendOnCollapsing()
+        {
+            if (Collapsing == null)
+                return;
+
+            Collapsing(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Collapsed Event
+
+        public event EventHandler Collapsed;
+
+        protected void SendOnCollapsed()
+        {
+            if (Collapsed == null)
+                return;
+
+            Collapsed(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
+        
         #region Constructors
 
         static ExpandingSurfaceVEPushPin()
@@ -100,11 +163,11 @@ namespace InfoStrat.VE.NUI
         protected override void Initialize()
         {
             base.Initialize();
-            
+
             this.cpContent = null;
             this.cpDetails = null;
             this.pnlContainer = null;
-            
+
             this.currentDetailState = ExpandingSurfaceVEPushPinDetailState.Mini;
         }
 
@@ -142,7 +205,7 @@ namespace InfoStrat.VE.NUI
 
             AnimateUtility.StopAnimation(pnlContainer, Panel.WidthProperty);
             AnimateUtility.StopAnimation(pnlContainer, Panel.HeightProperty);
-            
+
             pnlContainer.Width = currentSize.Width;
             pnlContainer.Height = currentSize.Height;
 
@@ -151,7 +214,7 @@ namespace InfoStrat.VE.NUI
             {
                 expandedSize.Width = sizeDetails.Width;
             }
-           
+
 
             if (currentDetailState == ExpandingSurfaceVEPushPinDetailState.Full ||
                 currentDetailState == ExpandingSurfaceVEPushPinDetailState.Growing)
@@ -169,6 +232,7 @@ namespace InfoStrat.VE.NUI
 
                 shrinkClock.CurrentTimeInvalidated += new EventHandler(currentTimeInvalidated);
                 shrinkClock.Completed += new EventHandler(shrinkClock_Completed);
+                SendOnCollapsing();
             }
             else
             {
@@ -185,24 +249,27 @@ namespace InfoStrat.VE.NUI
 
                 growClock.CurrentTimeInvalidated += new EventHandler(currentTimeInvalidated);
                 growClock.Completed += new EventHandler(growClock_Completed);
+                SendOnExpanding();
             }
         }
 
         void currentTimeInvalidated(object sender, EventArgs e)
         {
             if (Map != null)
-                Map.ForceUpdateItemPosition(this);            
+                Map.ForceUpdateItemPosition(this);
         }
 
         void growClock_Completed(object sender, EventArgs e)
         {
             currentDetailState = ExpandingSurfaceVEPushPinDetailState.Full;
+            SendOnExpanded();
         }
 
         void shrinkClock_Completed(object sender, EventArgs e)
         {
             currentDetailState = ExpandingSurfaceVEPushPinDetailState.Mini;
             cpDetails.Visibility = Visibility.Collapsed;
+            SendOnCollapsed();
         }
 
         #endregion

@@ -14,12 +14,6 @@ using System.Diagnostics;
 
 namespace InfoStrat.VE.WPFTouch
 {
-    public enum MapManipulationMode
-    {
-        PanZoomPivot,
-        TiltSpinZoomPivot
-    }
-
     public class WPFTouchVEMap : VEMap
     {
         #region Fields
@@ -94,91 +88,7 @@ namespace InfoStrat.VE.WPFTouch
             DependencyProperty.Register("TiltSensitivity", typeof(double), typeof(WPFTouchVEMap), new UIPropertyMetadata(0.5));
 
         #endregion
-
-        private MapManipulationMode _mapManipulationMode = MapManipulationMode.PanZoomPivot;
-        public MapManipulationMode MapManipulationMode
-        {
-            get
-            {
-                return _mapManipulationMode;
-            }
-            set
-            {
-                _mapManipulationMode = value;
-                NotifyPropertyChanged("MapManipulationMode");
-            }
-        }
-
-        private bool _isPanEnabled = true;
-        public bool IsPanEnabled
-        {
-            get
-            {
-                return _isPanEnabled;
-            }
-            set
-            {
-                _isPanEnabled = value;
-                NotifyPropertyChanged("IsPanEnabled");
-            }
-        }
-
-        private bool _isZoomEnabled = true;
-        public bool IsZoomEnabled
-        {
-            get
-            {
-                return _isZoomEnabled;
-            }
-            set
-            {
-                _isZoomEnabled = value;
-                NotifyPropertyChanged("IsZoomEnabled");
-            }
-        }
-
-        private bool _isPivotEnabled = true;
-        public bool IsPivotEnabled
-        {
-            get
-            {
-                return _isPivotEnabled;
-            }
-            set
-            {
-                _isPivotEnabled = value;
-                NotifyPropertyChanged("IsPivotEnabled");
-            }
-        }
-
-        private bool _isTiltEnabled = true;
-        public bool IsTiltEnabled
-        {
-            get
-            {
-                return _isTiltEnabled;
-            }
-            set
-            {
-                _isTiltEnabled = value;
-                NotifyPropertyChanged("IsTiltEnabled");
-            }
-        }
-
-        private bool _isSpinEnabled = true;
-        public bool IsSpinEnabled
-        {
-            get
-            {
-                return _isSpinEnabled;
-            }
-            set
-            {
-                _isSpinEnabled = value;
-                NotifyPropertyChanged("IsSpinEnabled");
-            }
-        }
-
+        
         #endregion
 
         #region Methods

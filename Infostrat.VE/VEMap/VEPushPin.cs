@@ -812,7 +812,7 @@ namespace InfoStrat.VE
 
             if (this.Map != null)
             {
-                position = this.Map.LatLongToPoint(latLong, this);
+                position = this.Map.LatLongToPointInternal(latLong, this);
 
                 //Not visible if no position (off screen)
                 if (position == null)

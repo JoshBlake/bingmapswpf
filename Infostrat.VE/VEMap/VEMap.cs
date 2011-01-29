@@ -1390,20 +1390,10 @@ namespace InfoStrat.VE
         /// <returns>Inner canvas-relative point</returns>
         public Point? OuterPointToInnerPoint(Point? point)
         {
-            if (point == null)
+            if (point == null ||
+                !point.HasValue)
                 return null;
-
-            double x = (int)MathHelper.MapValue(point.Value.X,
-                                         0,
-                                         this.ActualWidth,
-                                         0,
-                                         this.targetImage.ActualWidth);
-            double y = (int)MathHelper.MapValue(point.Value.Y,
-                                     0,
-                                     this.ActualHeight,
-                                     0,
-                                     this.targetImage.ActualHeight);
-            return new Point(x, y);
+            return this.TranslatePoint(point.Value, canvasPushPin);
         }
 
         /// <summary>
@@ -1413,20 +1403,10 @@ namespace InfoStrat.VE
         /// <returns>Control-relative point</returns>
         public Point? InnerPointToOuterPoint(Point? point)
         {
-            if (point == null)
+            if (point == null ||
+                !point.HasValue)
                 return null;
-
-            double x = (int)MathHelper.MapValue(point.Value.X,
-                                         0,
-                                         this.targetImage.ActualWidth,
-                                         0,
-                                         this.ActualWidth);
-            double y = (int)MathHelper.MapValue(point.Value.Y,
-                                     0,
-                                     this.targetImage.ActualHeight,
-                                     0,
-                                     this.ActualHeight);
-            return new Point(x, y);
+            return canvasPushPin.TranslatePoint(point.Value, this);
         }
 
         public Point? LatLongToPoint(VELatLong latLong)
@@ -1435,6 +1415,11 @@ namespace InfoStrat.VE
         }
 
         public Point? LatLongToPoint(VELatLong latLong, object key)
+        {
+            return InnerPointToOuterPoint(LatLongToPointInternal(latLong, key));
+        }
+
+        internal Point? LatLongToPointInternal(VELatLong latLong, object key)
         {
             if (this.globeControl == null ||
                 this.globeControl.PositionStep == null ||
@@ -1505,7 +1490,8 @@ namespace InfoStrat.VE
 
         public VELatLong PointToLatLong(Point? point)
         {
-            if (point == null)
+            if (point == null ||
+                !point.HasValue)
                 return null;
 
             if (this.globeControl == null ||
@@ -1515,18 +1501,12 @@ namespace InfoStrat.VE
                 return null;
             }
 
-            double x = (int)MathHelper.MapValue(point.Value.X,
-                                         0,
-                                         this.ActualWidth,
-                                         0,
-                                         globeControl.Width);
-            double y = (int)MathHelper.MapValue(point.Value.Y,
-                                     0,
-                                     this.ActualHeight,
-                                     0,
-                                     globeControl.Height);
+            point = OuterPointToInnerPoint(point.Value);
 
-            LatLonAlt? lla = this.globeControl.Host.Navigation.LatLonAltFromScreenPosition(new System.Drawing.Point((int)x, (int)y));
+            if (!point.HasValue)
+                return null;
+
+            LatLonAlt? lla = this.globeControl.Host.Navigation.LatLonAltFromScreenPosition(new System.Drawing.Point((int)point.Value.X, (int)point.Value.Y));
 
             if (lla.HasValue)
             {

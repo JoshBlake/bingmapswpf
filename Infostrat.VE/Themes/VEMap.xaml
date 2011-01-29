@@ -16,11 +16,11 @@
                             Height="{TemplateBinding Height}"
                             Margin="{TemplateBinding Margin}"
                             Padding="{TemplateBinding Padding}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
                         <Viewbox Name="PART_viewbox"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" 
+                                 HorizontalAlignment="Left"
+                                 VerticalAlignment="Top" 
                                  Stretch="UniformToFill">
                             <Grid Width="1024"
                                   Height="768"

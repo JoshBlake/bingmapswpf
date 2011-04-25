@@ -2027,7 +2027,9 @@ namespace InfoStrat.VE
 
         private void InvalidateVESurface()
         {
+#if DEBUG
             CountFrames();
+#endif
             if (d3dImage.IsFrontBufferAvailable && veSurface != IntPtr.Zero)
             {
                 try

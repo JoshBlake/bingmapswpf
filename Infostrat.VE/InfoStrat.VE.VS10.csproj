@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utilities\VisualUtility.cs" />
+    <Compile Include="VEMap\CompositionTargetEx.cs" />
     <Compile Include="VEMap\ILocationProvider.cs" />
     <Compile Include="VEMap\JumpCameraController.cs" />
     <Compile Include="VEMap\PositionStep.cs" />

@@ -22,6 +22,8 @@ using Microsoft.MapPoint.Rendering3D.State;
 using InfoStrat.VE.Utilities;
 using Microsoft.MapPoint.Binding;
 using System.Diagnostics;
+using System.Threading;
+using System.Windows.Threading;
 
 [assembly: CLSCompliant(true)]
 namespace InfoStrat.VE
@@ -44,7 +46,7 @@ namespace InfoStrat.VE
 
         #endregion
 
-        #region Class Members
+        #region Fields
 
         VEWindow winVE;
 
@@ -56,8 +58,8 @@ namespace InfoStrat.VE
 
         bool isTemplateLoaded;
         bool _isMapLoaded;
-        bool isMapPositionDirty = false;
-        bool isItemsPositionDirty = false;
+        volatile bool isMapPositionDirty = false;
+        volatile bool isItemsPositionDirty = false;
         private bool disposed = false;
 
         private delegate void DelegateGlobeRedraw();
@@ -75,6 +77,10 @@ namespace InfoStrat.VE
 
         Dictionary<object, RegisteredPosition> registeredPositions;
 
+        BackgroundWorker VEUpdateWorker;
+
+        int frameCount = 0;
+        Stopwatch fpsStopwatch = new Stopwatch();
         #endregion
 
         #region Public Events
@@ -1210,7 +1216,7 @@ namespace InfoStrat.VE
 
             shape.ZIndex = maxZIndex + 1;
         }
-        
+
         public void SendToBack(VEShape shape)
         {
             int minZIndex = int.MaxValue;
@@ -1243,10 +1249,10 @@ namespace InfoStrat.VE
         }
 
         public void ForceUpdateItemPosition(VEShape item)
-        {            
+        {
             if (!_isMapLoaded)
                 return;
-                       
+
             VEMapItem container = ItemContainerGenerator.ContainerFromItem(item) as VEMapItem;
 
             if (container == null)
@@ -1368,7 +1374,7 @@ namespace InfoStrat.VE
                 rp.Position = lla;
                 isItemsPositionDirty = true;
 
-                
+
                 //This call to update the surface elevation is slower than the ILocationListener way, but will only be needed
                 //once in a while when the latLong is changed
                 double surfaceElevation = this.globeControl.Host.WorldEngine.GetSurfaceElevation(lla.LatLon);
@@ -1376,7 +1382,7 @@ namespace InfoStrat.VE
                 LatLonAlt newLLA = lla;
                 newLLA.Altitude += surfaceElevation;
                 rp.Vector = newLLA.GetVector();
-                
+
                 this.globeControl.Host.WorldEngine.AddLocationListener(rp);
 
                 registeredPositions.Add(key, rp);
@@ -1897,7 +1903,7 @@ namespace InfoStrat.VE
 
             if (d3dImage.IsFrontBufferAvailable)
             {
-                CompositionTarget.Rendering += CompositionTarget_Rendering;
+                CompositionTargetEx.FrameUpdating += CompositionTargetEx_FrameUpdating;
 
                 GraphicsEngine3D graphicsEngine = GetGraphicsEngine();
 
@@ -1911,6 +1917,14 @@ namespace InfoStrat.VE
                     InvalidateVESurface();
                 }
 
+                if (VEUpdateWorker != null)
+                {
+                    VEUpdateWorker.CancelAsync();
+                }
+                VEUpdateWorker = new BackgroundWorker();
+                VEUpdateWorker.DoWork += new DoWorkEventHandler(VEUpdateWorker_DoWork);
+                VEUpdateWorker.WorkerSupportsCancellation = true;
+                VEUpdateWorker.RunWorkerAsync();
             }
         }
 
@@ -1922,12 +1936,14 @@ namespace InfoStrat.VE
             // We will create a new scene when a D3D device becomes 
             // available again.
 
-            CompositionTarget.Rendering -= CompositionTarget_Rendering;
+            CompositionTargetEx.FrameUpdating -= CompositionTargetEx_FrameUpdating;
             stopwatch.Stop();
 
             GraphicsEngine3D graphicsEngine = GetGraphicsEngine();
 
             graphicsEngine.PostRender -= graphicsEngine_PostRender;
+
+            VEUpdateWorker.CancelAsync();
 
             veSurface = IntPtr.Zero;
 
@@ -1939,7 +1955,32 @@ namespace InfoStrat.VE
 
         }
 
-        void CompositionTarget_Rendering(object sender, EventArgs e)
+        void VEUpdateWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var worker = sender as BackgroundWorker;
+            int numMilliseconds = 30;
+            while (!worker.CancellationPending)
+            {
+                if (!stopwatch.IsRunning)
+                    stopwatch.Start();
+                if (stopwatch.ElapsedMilliseconds > numMilliseconds)
+                {
+                    stopwatch.Reset();
+
+                    this.globeControl.Host.NeedUpdate();
+
+                    this.globeControl.Host.RenderEngine.ManuallyRenderNextFrame();
+
+                    Dispatcher.BeginInvoke((System.Action)delegate
+                    {
+                        UpdateMapItems();
+                    }, DispatcherPriority.Render);
+                }
+                Thread.Sleep(TimeSpan.FromMilliseconds(Math.Max(1, numMilliseconds - stopwatch.ElapsedMilliseconds)));
+            }
+        }
+
+        void CompositionTargetEx_FrameUpdating(object sender, RenderingEventArgs e)
         {
             if (!IsMapLoaded)
                 return;
@@ -1953,17 +1994,6 @@ namespace InfoStrat.VE
                 UpdateDPFromMap();
             }
             isMapPositionDirty = false;
-
-            if (!stopwatch.IsRunning)
-                stopwatch.Start();
-            if (stopwatch.ElapsedMilliseconds > 30)
-            {
-                if (isMapPositionDirty || isItemsPositionDirty)
-                    this.globeControl.Host.NeedUpdate();
-
-                this.globeControl.Host.RenderEngine.ManuallyRenderNextFrame();
-                stopwatch.Reset();
-            }
         }
 
         private void graphicsEngine_PostRender(object sender, EventArgs e)
@@ -1971,9 +2001,9 @@ namespace InfoStrat.VE
             //Get the direct3d9 pointer
             veSurface = GetSourceSurfacePtr();
 
-            if (globeControl.InvokeRequired)
+            if (this.globeControl.InvokeRequired)
             {
-                globeControl.BeginInvoke(new DelegateGlobeRedraw(InvalidateVESurface));
+                this.Dispatcher.BeginInvoke(new DelegateGlobeRedraw(InvalidateVESurface), DispatcherPriority.Render);
             }
             else
             {
@@ -1981,9 +2011,23 @@ namespace InfoStrat.VE
             }
         }
 
+        private void CountFrames()
+        {
+            if (!fpsStopwatch.IsRunning)
+                fpsStopwatch.Start();
+            frameCount++;
+            if (fpsStopwatch.ElapsedMilliseconds >= 1000)
+            {
+                double fps = frameCount / fpsStopwatch.Elapsed.TotalSeconds;
+                Trace.WriteLine("VE FPS: " + fps);
+                frameCount = 0;
+                fpsStopwatch.Reset();
+            }
+        }
+
         private void InvalidateVESurface()
         {
-
+            CountFrames();
             if (d3dImage.IsFrontBufferAvailable && veSurface != IntPtr.Zero)
             {
                 try
@@ -2006,9 +2050,6 @@ namespace InfoStrat.VE
                     InitVEMap();
                 }
             }
-
-            //Needs to be called every update. VE throttles itself.
-            UpdateMapItems();
         }
 
         // Positions all WPF items in the Items collection in proper lla position over top of the 

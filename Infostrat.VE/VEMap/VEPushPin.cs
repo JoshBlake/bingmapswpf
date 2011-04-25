@@ -42,6 +42,9 @@ namespace InfoStrat.VE
 
         bool isNewPin = true;
 
+        int behindPlanetCheckCount = 0;
+        int behindPlanetCheckMax = 10;
+
         #endregion
 
         #region Events
@@ -819,9 +822,14 @@ namespace InfoStrat.VE
                     isVisible = false;
 
                 //Not visible if behind planet
-                if (this.Map.IsBehindPlanet(latLong))
+                if (behindPlanetCheckCount++ > behindPlanetCheckMax)
                 {
-                    isVisible = false;
+                    behindPlanetCheckCount = 0;
+
+                    if (this.Map.IsBehindPlanet(latLong))
+                    {
+                        isVisible = false;
+                    }
                 }
 
                 //Not visible if out of altitude range

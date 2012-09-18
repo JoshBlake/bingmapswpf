@@ -868,7 +868,7 @@ namespace InfoStrat.VE
 
                 if (ScalesWithMap)
                 {
-                    if (newCameraAltitude != this.OriginalAltitude)
+                    if ((newCameraAltitude != this.OriginalAltitude) && (newCameraAltitude > 1.0))
                     {
                         double scaleFactor = this.OriginalAltitude / newCameraAltitude;
 

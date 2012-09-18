@@ -1967,9 +1967,15 @@ namespace InfoStrat.VE
                 {
                     stopwatch.Reset();
 
-                    this.globeControl.Host.NeedUpdate();
+                    try
+                    {
+                        this.globeControl.Host.NeedUpdate();
 
-                    this.globeControl.Host.RenderEngine.ManuallyRenderNextFrame();
+                        this.globeControl.Host.RenderEngine.ManuallyRenderNextFrame();
+                    }
+                        //Exceptions during shutdown
+                    catch (NullReferenceException) { return; }
+                    catch (InvalidOperationException) { return; }
 
                     Dispatcher.BeginInvoke((System.Action)delegate
                     {
@@ -2001,7 +2007,7 @@ namespace InfoStrat.VE
             //Get the direct3d9 pointer
             veSurface = GetSourceSurfacePtr();
 
-            if (this.globeControl.InvokeRequired)
+            if (!this.Dispatcher.CheckAccess())
             {
                 this.Dispatcher.BeginInvoke(new DelegateGlobeRedraw(InvalidateVESurface), DispatcherPriority.Render);
             }

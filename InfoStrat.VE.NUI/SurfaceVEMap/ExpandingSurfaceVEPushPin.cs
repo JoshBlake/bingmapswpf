@@ -34,7 +34,7 @@ namespace InfoStrat.VE.NUI
         ContentPresenter cpContent;
         ContentPresenter cpDetails;
         Panel pnlContainer;
-
+        bool pendingToggle = false;
         #endregion
 
         #region Details DP
@@ -180,6 +180,12 @@ namespace InfoStrat.VE.NUI
             this.cpContent = (ContentPresenter)this.Template.FindName("PART_cpContent", this);
             this.cpDetails = (ContentPresenter)this.Template.FindName("PART_cpDetails", this);
             this.pnlContainer = (Panel)this.Template.FindName("PART_pnlContainer", this);
+
+            if (pendingToggle)
+            {
+                pendingToggle = false;
+                ToggleDetailState();
+            }
         }
 
         void ExpandingSurfaceVEPushPin_Click(object sender, VEPushPinClickedEventArgs e)
@@ -190,6 +196,11 @@ namespace InfoStrat.VE.NUI
 
         void ToggleDetailState()
         {
+            if (cpContent == null)
+            {
+                pendingToggle = true;
+                return;
+            }
             cpContent.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             Size sizeTitle = cpContent.DesiredSize;
 

@@ -1,0 +1,21 @@
+| [Home] | [Getting Started] | [Features and RoadMap] | [Project Structure] | [Screenshots and Video] | [Application list] |
+! *Project Structure*
+
+InfoStrat.VE consists of two assemblies, InfoStrat.VE.dll and InfoStrat.VE.NUI.dll.  For WPF applications, only reference InfoStrat.VE.dll.  For Surface projects, you must reference both InfoStrat.VE.dll and InfoStrat.VE.NUI.dll.
+A summarized object tree is below:
+
+* *InfoStrat.VE.dll*
+** _InfoStrat.VE_ (Namespace)
+*** +VEMap+ - The main map class
+*** +VEPushPin+ - Add as a child to VEMap instances for push pin features
+** _InfoStrat.VE.Utilities_ (Namespace)
+*** +AnimateUtility+ - Extremely useful functions for fire-and-forget animation of just about anything in WPF
+*** +MathHelper+ - Help for the trigonometry impaired
+*** +RadiusConverter+ - XAML converter for radius to diameter and back
+
+* *InfoStrat.VE.NUI.dll*
+** _InfoStrat.VE.NUI_ (Namespace)
+*** +SurfaceVEMap+ - Adds Surface manipulations to VEMap
+*** +SurfaceVEPushPin+ - Uses Surface versions of base controls
+** _InfoStrat.VE.NUI.Utilities_ (Namespace)
+*** +SurfaceAnimateUtility+ - Adds animation for throwing ScatterViewItems
